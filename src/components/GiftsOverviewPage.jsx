@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar, List, ChevronLeft, ChevronRight, Plus, Edit, Eye } from 'lucide-react';
 import { useFirebase } from '../contexts/FirebaseContext';
@@ -87,55 +86,68 @@ const GiftsOverviewPage = () => {
       const dayString = date.toISOString().split('T')[0];
       const isHoliday = holidays.some(h => h.date === dayString);
       
-      let dayClass = 'h-24 border border-gray-300 p-2 cursor-pointer transition-all duration-200 flex flex-col justify-between';
+      let dayClass = 'h-32 border border-gray-300 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-white hover:bg-gray-50';
       
       if (!isCurrentMonth) {
-        dayClass += ' text-gray-400 bg-gray-50';
+        dayClass = 'h-32 border border-gray-200 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-50 text-gray-400';
       } else if (isToday) {
         dayClass += ' ring-2 ring-black';
       }
       
-      if (isHoliday) {
-        dayClass += ' bg-gray-100 border-gray-400';
-      } else if (dayEvents.length > 0) {
-        dayClass += ` ${getDayStatusClass(dayEvents)}`;
-      } else {
-        dayClass += ' bg-white hover:bg-gray-50';
+      // Apply color coding based on gift status
+      if (dayEvents.length > 0 && isCurrentMonth) {
+        const statusClass = getDayStatusClass(dayEvents);
+        if (statusClass.includes('delivered')) {
+          dayClass = 'h-32 border border-gray-400 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-100 hover:bg-gray-200 text-gray-800';
+        } else if (statusClass.includes('scheduled')) {
+          dayClass = 'h-32 border border-gray-600 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-800 hover:bg-gray-900 text-white';
+        } else if (statusClass.includes('progress')) {
+          dayClass = 'h-32 border border-gray-500 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-600 hover:bg-gray-700 text-white';
+        } else if (statusClass.includes('not-started')) {
+          dayClass = 'h-32 border border-gray-400 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-300 hover:bg-gray-400 text-gray-800';
+        } else {
+          dayClass = 'h-32 border border-gray-300 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-200 hover:bg-gray-300 text-gray-900';
+        }
+      } else if (isHoliday && isCurrentMonth) {
+        dayClass = 'h-32 border border-gray-200 p-3 cursor-pointer transition-all duration-200 flex flex-col justify-between bg-gray-50 hover:bg-gray-100 text-gray-600';
       }
 
       days.push(
         <div
           key={i}
           className={dayClass}
-          onClick={() => handleDayClick(date)}
         >
           <div className="flex justify-between items-start">
-            <span className={`text-sm font-semibold ${isToday ? 'text-black' : isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}`}>
+            <span className={`text-lg font-bold ${isToday ? 'text-black' : ''}`}>
               {date.getDate()}
             </span>
             {dayEvents.length > 0 && (
-              <span className="bg-black text-white text-xs px-1.5 py-0.5 rounded-full font-medium">
+              <span className="bg-black text-white text-sm px-2 py-1 rounded-full font-bold min-w-[24px] text-center">
                 {dayEvents.length}
               </span>
             )}
           </div>
-          {isHoliday && (
-            <div className="text-xs text-gray-600 font-medium truncate">
-              {holidays.find(h => h.date === dayString)?.name}
-            </div>
-          )}
-          {dayEvents.length > 0 && (
-            <div className="flex flex-col space-y-1">
-              {dayEvents.slice(0, 2).map((event, idx) => (
-                <div key={idx} className="text-xs truncate opacity-75">
-                  {event.friendName}
-                </div>
-              ))}
-              {dayEvents.length > 2 && (
-                <div className="text-xs opacity-75">+{dayEvents.length - 2} more</div>
-              )}
-            </div>
-          )}
+          
+          <div className="flex-1 flex flex-col justify-center space-y-1">
+            {isHoliday && (
+              <div className="text-xs font-medium truncate opacity-75">
+                {holidays.find(h => h.date === dayString)?.name}
+              </div>
+            )}
+            {dayEvents.slice(0, 2).map((event, idx) => (
+              <div key={idx} className="text-xs truncate font-medium opacity-80">
+                {event.friendName}
+              </div>
+            ))}
+            {dayEvents.length > 2 && (
+              <div className="text-xs font-medium opacity-75">+{dayEvents.length - 2} more</div>
+            )}
+          </div>
+          
+          <div onClick={(e) => {
+            e.stopPropagation();
+            handleDayClick(date);
+          }} className="w-full h-full absolute top-0 left-0"></div>
         </div>
       );
     }
@@ -144,7 +156,7 @@ const GiftsOverviewPage = () => {
       <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-300">
         <div className="grid grid-cols-7 gap-0">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-            <div key={day} className="bg-gray-100 p-3 text-center font-bold text-gray-900 border-b border-r border-gray-300 last:border-r-0">
+            <div key={day} className="bg-gray-100 p-4 text-center font-bold text-gray-900 border-b border-r border-gray-300 last:border-r-0">
               {day}
             </div>
           ))}
@@ -189,49 +201,47 @@ const GiftsOverviewPage = () => {
   };
 
   const renderDecadeView = () => {
-    const currentYear = currentDate.getFullYear();
-    const startYear = Math.floor(currentYear / 10) * 10;
     const years = [];
     
-    // Show previous 10, current 10, and future 10 decades worth of years
-    for (let decade = -1; decade <= 1; decade++) {
-      const decadeStartYear = startYear + (decade * 10);
+    // Show decades from 1920 to 2130 (21 decades total)
+    for (let decade = 1920; decade <= 2120; decade += 10) {
+      const decadeEvents = allEvents.filter(event => {
+        const eventDate = new Date(event.eventDate);
+        const eventYear = eventDate.getFullYear();
+        return eventYear >= decade && eventYear < decade + 10;
+      });
       
-      for (let i = 0; i < 10; i++) {
-        const year = decadeStartYear + i;
-        const yearEvents = allEvents.filter(event => {
-          const eventDate = new Date(event.eventDate);
-          return eventDate.getFullYear() === year;
-        });
-        
-        const isCurrentDecade = decade === 0;
-        
-        years.push(
-          <div
-            key={year}
-            className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border hover:border-black ${
-              isCurrentDecade 
-                ? 'bg-white border-gray-300' 
-                : 'bg-gray-50 border-gray-200'
-            }`}
-            onClick={() => {
-              setCurrentDate(new Date(year, 0, 1));
-              setCalendarView('year');
-            }}
-          >
-            <h3 className={`font-bold text-lg mb-2 ${isCurrentDecade ? 'text-gray-900' : 'text-gray-600'}`}>
-              {year}
-            </h3>
-            <p className={`font-medium ${isCurrentDecade ? 'text-gray-600' : 'text-gray-500'}`}>
-              {yearEvents.length} gifts scheduled
-            </p>
-          </div>
-        );
-      }
+      const currentDecade = Math.floor(new Date().getFullYear() / 10) * 10;
+      const isCurrentDecade = decade === currentDecade;
+      
+      years.push(
+        <div
+          key={decade}
+          className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border hover:border-black ${
+            isCurrentDecade 
+              ? 'bg-white border-gray-300 ring-2 ring-black' 
+              : 'bg-gray-50 border-gray-200'
+          }`}
+          onClick={() => {
+            setCurrentDate(new Date(decade, 0, 1));
+            setCalendarView('year');
+          }}
+        >
+          <h3 className={`font-bold text-lg mb-2 ${isCurrentDecade ? 'text-gray-900' : 'text-gray-600'}`}>
+            {decade}s
+          </h3>
+          <p className={`text-sm font-medium ${isCurrentDecade ? 'text-gray-600' : 'text-gray-500'}`}>
+            {decade} - {decade + 9}
+          </p>
+          <p className={`font-medium mt-1 ${isCurrentDecade ? 'text-gray-600' : 'text-gray-500'}`}>
+            {decadeEvents.length} gifts scheduled
+          </p>
+        </div>
+      );
     }
     
     return (
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-5 gap-4 max-h-96 overflow-y-auto">
         {years}
       </div>
     );
@@ -326,8 +336,7 @@ const GiftsOverviewPage = () => {
         case 'year':
           return currentDate.getFullYear().toString();
         case 'decade':
-          const startYear = Math.floor(currentDate.getFullYear() / 10) * 10;
-          return `${startYear - 10} - ${startYear + 19}`;
+          return 'Decades (1920s - 2120s)';
         default:
           return '';
       }
@@ -352,12 +361,14 @@ const GiftsOverviewPage = () => {
 
     return (
       <div className="flex items-center justify-between mb-6">
-        <button
-          onClick={() => getNavigationFunction()('prev')}
-          className="p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300"
-        >
-          <ChevronLeft className="h-5 w-5 text-gray-700" />
-        </button>
+        {calendarView !== 'decade' && (
+          <button
+            onClick={() => getNavigationFunction()('prev')}
+            className="p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300"
+          >
+            <ChevronLeft className="h-5 w-5 text-gray-700" />
+          </button>
+        )}
         
         <button
           onClick={handleHeaderClick}
@@ -366,12 +377,14 @@ const GiftsOverviewPage = () => {
           {getHeaderText()}
         </button>
         
-        <button
-          onClick={() => getNavigationFunction()('next')}
-          className="p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300"
-        >
-          <ChevronRight className="h-5 w-5 text-gray-700" />
-        </button>
+        {calendarView !== 'decade' && (
+          <button
+            onClick={() => getNavigationFunction()('next')}
+            className="p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300"
+          >
+            <ChevronRight className="h-5 w-5 text-gray-700" />
+          </button>
+        )}
       </div>
     );
   };

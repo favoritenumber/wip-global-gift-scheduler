@@ -3,12 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle, XCircle, User, Calendar, MapPin, Plus } from 'lucide-react';
 import { useFirebase } from '../contexts/FirebaseContext';
 import PersonSummaryModal from './PersonSummaryModal';
+import AddPersonModal from './AddPersonModal';
 
 const PeoplePage = () => {
   const { allEvents } = useFirebase();
   const [people, setPeople] = useState([]);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showAddPersonModal, setShowAddPersonModal] = useState(false);
 
   // Aggregate people data from events
   useEffect(() => {
@@ -54,104 +56,116 @@ const PeoplePage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-black">
             People Management
           </h1>
-          <p className="text-gray-600 mt-2">Manage your gift recipients and their information</p>
+          <p className="text-gray-600 mt-2 font-medium">
+            {people.length} people • Manage your gift recipients and their information
+          </p>
         </div>
         
-        <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-lg p-4">
-          <div className="flex items-center space-x-2 text-blue-700">
-            <User className="h-5 w-5" />
-            <span className="font-semibold">{people.length} People</span>
+        <div className="flex items-center space-x-4">
+          <div className="bg-gray-100 rounded-lg p-4 border border-gray-300">
+            <div className="flex items-center space-x-2 text-gray-700">
+              <User className="h-5 w-5" />
+              <span className="font-semibold">{people.length} People</span>
+            </div>
           </div>
+          
+          <button
+            onClick={() => setShowAddPersonModal(true)}
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2 shadow-lg border border-gray-300"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add New Person</span>
+          </button>
         </div>
       </div>
 
       {/* People Table */}
-      <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-purple-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg border border-gray-300 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-purple-50 to-blue-50">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">
                   Name
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">
                   Nickname
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">
                   Birthday
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">
                   Anniversary
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">
                   Gifts Scheduled
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-purple-700 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-300">
                   Address on File
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-purple-100">
+            <tbody className="divide-y divide-gray-200">
               {people.map((person, index) => (
                 <tr 
                   key={person.name} 
-                  className="hover:bg-purple-25 transition-colors cursor-pointer"
+                  className="hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => handlePersonClick(person)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-10 w-10 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
+                      <div className="h-10 w-10 bg-black rounded-full flex items-center justify-center text-white font-bold">
                         {person.name.charAt(0)}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 hover:text-purple-600 transition-colors">
+                        <div className="text-sm font-bold text-gray-900 hover:text-gray-600 transition-colors">
                           {person.name}
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 font-medium">
                     {person.nickname || '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                     {person.birthday ? (
                       <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-blue-500" />
-                        <span>{new Date(person.birthday).toLocaleDateString()}</span>
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{new Date(person.birthday).toLocaleDateString()}</span>
                       </div>
                     ) : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                     {person.anniversary ? (
                       <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4 text-pink-500" />
-                        <span>{new Date(person.anniversary).toLocaleDateString()}</span>
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <span className="font-medium">{new Date(person.anniversary).toLocaleDateString()}</span>
                       </div>
                     ) : '-'}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800">
+                    <span className="inline-flex px-3 py-1 text-sm font-bold rounded-full bg-gray-100 text-gray-900 border border-gray-300">
                       {person.giftsScheduled} {person.giftsScheduled === 1 ? 'gift' : 'gifts'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {hasCompleteAddress(person.address) ? (
-                        <div className="flex items-center space-x-2 text-green-600">
+                        <div className="flex items-center space-x-2 text-gray-900">
                           <CheckCircle className="h-5 w-5" />
-                          <span className="text-sm font-medium">Complete</span>
+                          <span className="text-sm font-bold">Complete</span>
                         </div>
                       ) : (
-                        <div className="flex items-center space-x-2 text-red-500">
+                        <div className="flex items-center space-x-2 text-gray-500">
                           <XCircle className="h-5 w-5" />
-                          <span className="text-sm font-medium">Incomplete</span>
+                          <span className="text-sm font-bold">Incomplete</span>
                         </div>
                       )}
                     </div>
@@ -164,8 +178,15 @@ const PeoplePage = () => {
           {people.length === 0 && (
             <div className="text-center py-12">
               <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No people found.</p>
-              <p className="text-gray-400">Start by adding some gifts to see people here.</p>
+              <p className="text-gray-500 text-lg font-medium">No people found.</p>
+              <p className="text-gray-400">Start by adding some people or gifts to see them here.</p>
+              <button
+                onClick={() => setShowAddPersonModal(true)}
+                className="mt-4 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2 mx-auto"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Your First Person</span>
+              </button>
             </div>
           )}
         </div>
@@ -178,6 +199,12 @@ const PeoplePage = () => {
           onClose={() => setShowModal(false)}
         />
       )}
+
+      {/* Add Person Modal */}
+      <AddPersonModal
+        isOpen={showAddPersonModal}
+        onClose={() => setShowAddPersonModal(false)}
+      />
     </div>
   );
 };
