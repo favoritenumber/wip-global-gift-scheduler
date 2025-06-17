@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { collection, onSnapshot, query } from 'firebase/firestore';
@@ -7,6 +8,9 @@ import { FirebaseProvider } from '../contexts/FirebaseContext';
 import Header from '../components/Header';
 import GiftsOverviewPage from '../components/GiftsOverviewPage';
 import AddEditEventPage from '../components/AddEditEventPage';
+import PeoplePage from '../components/PeoplePage';
+import SettingsPage from '../components/SettingsPage';
+import SupportPage from '../components/SupportPage';
 
 const Index = () => {
   // Core app state
@@ -18,7 +22,26 @@ const Index = () => {
   const [allEvents, setAllEvents] = useState([]);
   const [userSettings, setUserSettings] = useState({
     senderName: 'John Doe',
-    defaultSignature: 'With love ❤️'
+    defaultSignature: 'With love ❤️',
+    email: 'john.doe@email.com',
+    phone: '+1 (555) 123-4567',
+    address: {
+      street: '123 Main St',
+      city: 'Anytown',
+      state: 'CA',
+      zipCode: '12345',
+      country: 'USA'
+    },
+    notifications: {
+      email: true,
+      sms: true,
+      reminders: true
+    },
+    giftDefaults: {
+      defaultGiftType: 'Personal Note and photo ($5)',
+      defaultMessage: 'Hope this brightens your day!',
+      autoRecurring: false
+    }
   });
 
   // Firebase auth setup
@@ -101,11 +124,11 @@ const Index = () => {
 
   if (!isAuthReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-pink-50 to-blue-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
-          <h2 className="text-xl font-semibold text-gray-900">Loading Gift Scheduler...</h2>
-          <p className="text-gray-600 mt-2">Setting up your personalized experience</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-500 border-t-transparent mx-auto mb-6"></div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Loading Global Gift Scheduler...</h2>
+          <p className="text-gray-600">Setting up your personalized gifting experience</p>
         </div>
       </div>
     );
@@ -113,7 +136,7 @@ const Index = () => {
 
   return (
     <FirebaseProvider value={firebaseContextValue}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-25 to-blue-50">
         <Header 
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
@@ -122,30 +145,9 @@ const Index = () => {
         
         <main>
           {currentPage === 'gifts' && <GiftsOverviewPage />}
-          {currentPage === 'people' && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-8">People Management</h1>
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <p className="text-gray-600">People management coming soon...</p>
-              </div>
-            </div>
-          )}
-          {currentPage === 'settings' && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-8">Settings</h1>
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <p className="text-gray-600">Settings page coming soon...</p>
-              </div>
-            </div>
-          )}
-          {currentPage === 'support' && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-8">Support & FAQ</h1>
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <p className="text-gray-600">Support page coming soon...</p>
-              </div>
-            </div>
-          )}
+          {currentPage === 'people' && <PeoplePage />}
+          {currentPage === 'settings' && <SettingsPage />}
+          {currentPage === 'support' && <SupportPage />}
           {currentPage === 'add-event' && <AddEditEventPage />}
         </main>
       </div>

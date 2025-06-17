@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { addDoc, updateDoc, doc, collection } from 'firebase/firestore';
 import { useFirebase } from '../contexts/FirebaseContext';
@@ -30,6 +29,7 @@ const AddEditEventPage = () => {
     giftType: 'Personal Note and photo ($5)',
     personalMessage: '',
     polaroidPhotoUrl: '',
+    isRecurring: false,
     address: {
       street: '',
       city: '',
@@ -204,228 +204,270 @@ const AddEditEventPage = () => {
   ];
 
   const relationshipOptions = [
-    { value: 'Family', label: 'Family', subOptions: ['Mother', 'Father', 'Son', 'Daughter', 'Brother', 'Sister', 'Partner', 'Grandparent', 'Cousin', 'Aunt/Uncle', 'Niece/Nephew'] },
+    { value: 'Family', label: 'Family', subOptions: ['Mother', 'Father', 'Son', 'Daughter', 'Brother', 'Sister', 'Grandparent', 'Cousin', 'Aunt/Uncle', 'Niece/Nephew'] },
     { value: 'Friend', label: 'Friends & Acquaintances', subOptions: ['Friend', 'Childhood Friend', 'College Friend', 'Work Friend', 'Neighbor'] },
     { value: 'Colleague', label: 'Professional', subOptions: ['Colleague', 'Boss', 'Employee', 'Client', 'Business Partner'] },
-    { value: 'Romantic Partner', label: 'Romantic', subOptions: ['Partner', 'Spouse', 'Boyfriend', 'Girlfriend'] },
+    { value: 'Romantic Partner', label: 'Romantic', subOptions: ['Husband', 'Wife', 'Partner', 'Spouse', 'Boyfriend', 'Girlfriend'] },
     { value: 'Other', label: 'Other', subOptions: ['Mentor', 'Teacher', 'Student', 'Caregiver', 'Other'] }
   ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {editingEvent ? 'Edit Gift' : 'Add New Gift'}
-        </h1>
-        <Button
-          variant="outline"
+        <div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            {editingEvent ? 'Edit Gift' : 'Add New Gift'}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {editingEvent ? 'Update your gift details' : 'Schedule a thoughtful gift for someone special'}
+          </p>
+        </div>
+        <button
           onClick={() => {
             setEditingEvent(null);
             setCurrentPage('gifts');
           }}
+          className="px-4 py-2 border border-purple-300 rounded-lg text-purple-700 hover:bg-purple-50 transition-colors"
         >
           Back to Gifts
-        </Button>
+        </button>
       </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column - Form Fields */}
         <div className="space-y-6">
-          {/* Relationship and Nickname Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="relationship">Relationship</Label>
-              <select
-                id="relationship"
-                value={formData.relationship}
-                onChange={(e) => handleRelationshipChange(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-              >
-                {relationshipOptions.map(group => (
-                  <optgroup key={group.value} label={group.label}>
-                    {group.subOptions.map(option => (
-                      <option key={option} value={group.value}>{option}</option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <Label htmlFor="nickname">Nickname</Label>
-              <Input
-                id="nickname"
-                type="text"
-                value={formData.nickname}
-                onChange={(e) => setFormData(prev => ({ ...prev, nickname: e.target.value }))}
-                placeholder="Optional nickname"
-              />
-            </div>
-          </div>
-
-          {/* Recipient's Name with Autocomplete */}
-          <div className="relative">
-            <Label htmlFor="friendName">Recipient's Name *</Label>
-            <Input
-              ref={nameInputRef}
-              id="friendName"
-              type="text"
-              value={formData.friendName}
-              onChange={(e) => handleNameChange(e.target.value)}
-              onFocus={() => {
-                if (formData.friendName.length > 0) {
-                  setShowSuggestions(true);
-                }
-              }}
-              onBlur={() => {
-                // Delay hiding suggestions to allow clicking
-                setTimeout(() => setShowSuggestions(false), 200);
-              }}
-              placeholder="Enter recipient's name"
-              required
-            />
+          <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-purple-100 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Gift Details</h3>
             
-            {/* Autocomplete Suggestions */}
-            {showSuggestions && filteredSuggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                {filteredSuggestions.map((name, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                    onClick={() => handleSuggestionClick(name)}
-                  >
-                    {name}
-                  </button>
-                ))}
+            {/* Relationship and Nickname Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="relationship" className="block text-sm font-medium text-gray-700 mb-2">Relationship</label>
+                <select
+                  id="relationship"
+                  value={formData.relationship}
+                  onChange={(e) => handleRelationshipChange(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  {relationshipOptions.map(group => (
+                    <optgroup key={group.value} label={group.label}>
+                      {group.subOptions.map(option => (
+                        <option key={option} value={group.value}>{option}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
               </div>
-            )}
-          </div>
 
-          {/* Event Type */}
-          <div>
-            <Label htmlFor="eventType">Event Type *</Label>
-            <select
-              id="eventType"
-              value={formData.eventType}
-              onChange={(e) => setFormData(prev => ({ ...prev, eventType: e.target.value }))}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
-              required
-            >
-              <option value="">-- Select an Event --</option>
-              {eventTypeOptions.map(type => (
-                <option key={type} value={type}>{type}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Event Date and Type of Gift Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="eventDate">Event Date *</Label>
-              <Input
-                id="eventDate"
-                type="date"
-                value={formData.eventDate}
-                onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
-                required
-              />
+              <div>
+                <label htmlFor="nickname" className="block text-sm font-medium text-gray-700 mb-2">Nickname</label>
+                <input
+                  id="nickname"
+                  type="text"
+                  value={formData.nickname}
+                  onChange={(e) => setFormData(prev => ({ ...prev, nickname: e.target.value }))}
+                  placeholder="Optional nickname"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
             </div>
 
-            <div>
-              <Label htmlFor="giftType">Type of Gift</Label>
+            {/* Recipient's Name with Autocomplete */}
+            <div className="relative mb-4">
+              <label htmlFor="friendName" className="block text-sm font-medium text-gray-700 mb-2">Recipient's Name *</label>
+              <input
+                ref={nameInputRef}
+                id="friendName"
+                type="text"
+                value={formData.friendName}
+                onChange={(e) => handleNameChange(e.target.value)}
+                onFocus={() => {
+                  if (formData.friendName.length > 0) {
+                    setShowSuggestions(true);
+                  }
+                }}
+                onBlur={() => {
+                  setTimeout(() => setShowSuggestions(false), 200);
+                }}
+                placeholder="Enter recipient's name"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              
+              {showSuggestions && filteredSuggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-40 overflow-y-auto">
+                  {filteredSuggestions.map((name, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className="w-full px-4 py-2 text-left hover:bg-purple-50 focus:bg-purple-50 focus:outline-none transition-colors"
+                      onClick={() => handleSuggestionClick(name)}
+                    >
+                      {name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Event Type */}
+            <div className="mb-4">
+              <label htmlFor="eventType" className="block text-sm font-medium text-gray-700 mb-2">Event Type *</label>
               <select
-                id="giftType"
-                value={formData.giftType}
-                onChange={(e) => setFormData(prev => ({ ...prev, giftType: e.target.value }))}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                id="eventType"
+                value={formData.eventType}
+                onChange={(e) => setFormData(prev => ({ ...prev, eventType: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                required
               >
-                {giftTypeOptions.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                <option value="">-- Select an Event --</option>
+                {eventTypeOptions.map(type => (
+                  <option key={type} value={type}>{type}</option>
                 ))}
               </select>
-              <p className="mt-1 text-sm text-gray-600">
-                {giftTypeOptions.find(opt => opt.value === formData.giftType)?.description}
-              </p>
-            </div>
-          </div>
-
-          {/* Personal Message and Photo Upload Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="personalMessage">Personal Message</Label>
-              <Textarea
-                id="personalMessage"
-                value={formData.personalMessage}
-                onChange={(e) => setFormData(prev => ({ ...prev, personalMessage: e.target.value }))}
-                placeholder="Enter your personal message..."
-                rows={4}
-              />
             </div>
 
-            <div>
-              <Label htmlFor="photo">Upload Photo</Label>
-              <input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100"
-              />
+            {/* Event Date and Type of Gift Row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label htmlFor="eventDate" className="block text-sm font-medium text-gray-700 mb-2">Event Date *</label>
+                <input
+                  id="eventDate"
+                  type="date"
+                  value={formData.eventDate}
+                  onChange={(e) => setFormData(prev => ({ ...prev, eventDate: e.target.value }))}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="giftType" className="block text-sm font-medium text-gray-700 mb-2">Type of Gift</label>
+                <select
+                  id="giftType"
+                  value={formData.giftType}
+                  onChange={(e) => setFormData(prev => ({ ...prev, giftType: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  {giftTypeOptions.map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Recurring Checkbox */}
+            <div className="mb-4">
+              <label className="flex items-center space-x-3">
+                <input
+                  type="checkbox"
+                  checked={formData.isRecurring}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isRecurring: e.target.checked }))}
+                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="text-sm text-gray-700">Make this gift automatically recurring annually</span>
+              </label>
+            </div>
+
+            {/* Personal Message and Photo Upload */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="personalMessage" className="block text-sm font-medium text-gray-700 mb-2">Personal Message</label>
+                <textarea
+                  id="personalMessage"
+                  value={formData.personalMessage}
+                  onChange={(e) => setFormData(prev => ({ ...prev, personalMessage: e.target.value }))}
+                  placeholder="Enter your personal message..."
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="photo" className="block text-sm font-medium text-gray-700 mb-2">Upload Photo</label>
+                <input
+                  id="photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 transition-colors"
+                />
+              </div>
             </div>
           </div>
 
           {/* Submit Button */}
           <div className="pt-4">
-            <Button
+            <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full md:w-auto bg-emerald-600 hover:bg-emerald-700"
+              className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 disabled:opacity-50 font-medium shadow-lg"
             >
               {isSubmitting ? 'Saving...' : (editingEvent ? 'Update Gift' : 'Schedule Gift')}
-            </Button>
+            </button>
           </div>
         </div>
 
-        {/* Right Column - Card Preview */}
+        {/* Right Column - Enhanced Card Preview */}
         <div className="lg:sticky lg:top-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Card Preview</h3>
-          <div className="bg-pink-50 border-2 border-pink-200 rounded-lg p-6 shadow-sm">
-            <div className="bg-white rounded-lg p-6 shadow-md">
-              <div className="flex items-start space-x-4">
-                {/* Photo Preview */}
-                <div className="flex-shrink-0">
-                  {photoPreview ? (
-                    <img 
-                      src={photoPreview} 
-                      alt="Preview" 
-                      className="w-20 h-24 object-cover rounded border-2 border-gray-200"
-                    />
-                  ) : (
-                    <div className="w-20 h-24 bg-gray-200 rounded border-2 border-gray-300 flex items-center justify-center">
-                      <span className="text-xs text-gray-500 text-center">No Photo Uploaded</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Message Content */}
-                <div className="flex-1">
-                  <p className="text-gray-900 mb-4">
-                    Dear {formData.friendName || 'Recipient'},
-                  </p>
-                  
-                  <div className="text-gray-700 italic mb-4 min-h-[60px]">
-                    {formData.personalMessage || 'Your personal message will appear here.'}
+          <div className="bg-white/80 backdrop-blur-lg rounded-xl shadow-lg border border-purple-100 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Card Preview</h3>
+            
+            {/* Greeting Card Style Preview */}
+            <div className="bg-gradient-to-br from-red-100 via-pink-50 to-red-100 border-2 border-red-200 rounded-xl p-6 shadow-lg">
+              <div className="bg-white rounded-lg p-6 shadow-md">
+                <div className="flex items-start space-x-4">
+                  {/* Photo Preview */}
+                  <div className="flex-shrink-0">
+                    {photoPreview ? (
+                      <div className="relative">
+                        <img 
+                          src={photoPreview} 
+                          alt="Preview" 
+                          className="w-20 h-24 object-cover rounded-lg border-4 border-white shadow-md"
+                        />
+                        <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-red-200 rounded-full border-2 border-white"></div>
+                      </div>
+                    ) : (
+                      <div className="w-20 h-24 bg-gray-100 rounded-lg border-4 border-white shadow-md flex items-center justify-center">
+                        <span className="text-xs text-gray-400 text-center">No Photo</span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="text-right">
-                    <p className="text-gray-900">With love,</p>
-                    <p className="text-gray-900 font-medium">
-                      {userSettings.senderName || 'John Doe'}
-                    </p>
+                  {/* Message Content */}
+                  <div className="flex-1">
+                    <div className="text-center mb-4">
+                      <div className="w-16 h-1 bg-gradient-to-r from-red-300 to-pink-300 mx-auto mb-2"></div>
+                      <p className="text-red-700 font-serif text-lg">
+                        For {formData.friendName || 'Recipient'}
+                      </p>
+                      <div className="w-16 h-1 bg-gradient-to-r from-red-300 to-pink-300 mx-auto mt-2"></div>
+                    </div>
+                    
+                    <div className="text-gray-700 italic mb-4 min-h-[60px] font-serif text-center">
+                      {formData.personalMessage || 'Your personal message will appear here...'}
+                    </div>
+
+                    <div className="text-center border-t border-red-100 pt-4">
+                      <p className="text-gray-700 font-serif">With love,</p>
+                      <p className="text-gray-900 font-semibold font-serif">
+                        {userSettings.senderName || 'John Doe'}
+                      </p>
+                      <p className="text-sm text-red-600 font-serif mt-1">
+                        {userSettings.defaultSignature}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
+            </div>
+            
+            {/* Gift Type Description */}
+            <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-100">
+              <p className="text-sm text-purple-700">
+                {giftTypeOptions.find(opt => opt.value === formData.giftType)?.description}
+              </p>
             </div>
           </div>
         </div>
