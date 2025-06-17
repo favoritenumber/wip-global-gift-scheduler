@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Calendar, List, ChevronLeft, ChevronRight, Plus, Edit, Eye } from 'lucide-react';
 import { useFirebase } from '../contexts/FirebaseContext';
@@ -6,7 +7,7 @@ import { formatDate, getStatusInfo, getDayStatusClass, getHolidays } from '../ut
 const GiftsOverviewPage = () => {
   const { allEvents, setCurrentPage, setEditingEvent, setPrefillDate } = useFirebase();
   const [viewMode, setViewMode] = useState('calendar');
-  const [calendarView, setCalendarView] = useState('month'); // month, year, decade
+  const [calendarView, setCalendarView] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState(null);
   const [showDayModal, setShowDayModal] = useState(false);
@@ -86,18 +87,20 @@ const GiftsOverviewPage = () => {
       const dayString = date.toISOString().split('T')[0];
       const isHoliday = holidays.some(h => h.date === dayString);
       
-      let dayClass = 'h-24 border border-gray-200 p-1 cursor-pointer transition-all duration-200 hover:bg-purple-50';
+      let dayClass = 'h-24 border border-gray-300 p-2 cursor-pointer transition-all duration-200 flex flex-col justify-between';
       
       if (!isCurrentMonth) {
         dayClass += ' text-gray-400 bg-gray-50';
       } else if (isToday) {
-        dayClass += ' ring-2 ring-purple-500';
+        dayClass += ' ring-2 ring-black';
       }
       
       if (isHoliday) {
-        dayClass += ' bg-pink-100 border-pink-200';
+        dayClass += ' bg-gray-100 border-gray-400';
       } else if (dayEvents.length > 0) {
         dayClass += ` ${getDayStatusClass(dayEvents)}`;
+      } else {
+        dayClass += ' bg-white hover:bg-gray-50';
       }
 
       days.push(
@@ -106,19 +109,31 @@ const GiftsOverviewPage = () => {
           className={dayClass}
           onClick={() => handleDayClick(date)}
         >
-          <div className="flex justify-between items-start h-full">
-            <span className={`text-sm font-medium ${isToday ? 'text-purple-700' : ''}`}>
+          <div className="flex justify-between items-start">
+            <span className={`text-sm font-semibold ${isToday ? 'text-black' : isCurrentMonth ? 'text-gray-900' : 'text-gray-400'}`}>
               {date.getDate()}
             </span>
             {dayEvents.length > 0 && (
-              <span className="bg-white text-xs px-1 py-0.5 rounded shadow text-gray-700">
+              <span className="bg-black text-white text-xs px-1.5 py-0.5 rounded-full font-medium">
                 {dayEvents.length}
               </span>
             )}
           </div>
           {isHoliday && (
-            <div className="text-xs text-pink-600 font-medium mt-1 truncate">
+            <div className="text-xs text-gray-600 font-medium truncate">
               {holidays.find(h => h.date === dayString)?.name}
+            </div>
+          )}
+          {dayEvents.length > 0 && (
+            <div className="flex flex-col space-y-1">
+              {dayEvents.slice(0, 2).map((event, idx) => (
+                <div key={idx} className="text-xs truncate opacity-75">
+                  {event.friendName}
+                </div>
+              ))}
+              {dayEvents.length > 2 && (
+                <div className="text-xs opacity-75">+{dayEvents.length - 2} more</div>
+              )}
             </div>
           )}
         </div>
@@ -126,13 +141,15 @@ const GiftsOverviewPage = () => {
     }
 
     return (
-      <div className="grid grid-cols-7 gap-0 bg-white rounded-lg shadow-lg overflow-hidden">
-        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="bg-gradient-to-r from-purple-100 to-pink-100 p-3 text-center font-semibold text-gray-700 border-b border-gray-200">
-            {day}
-          </div>
-        ))}
-        {days}
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-300">
+        <div className="grid grid-cols-7 gap-0">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="bg-gray-100 p-3 text-center font-bold text-gray-900 border-b border-r border-gray-300 last:border-r-0">
+              {day}
+            </div>
+          ))}
+          {days}
+        </div>
       </div>
     );
   };
@@ -152,14 +169,14 @@ const GiftsOverviewPage = () => {
       months.push(
         <div
           key={month}
-          className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 hover:border-purple-300"
+          className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-300 hover:border-black"
           onClick={() => {
             setCurrentDate(new Date(year, month, 1));
             setCalendarView('month');
           }}
         >
-          <h3 className="font-semibold text-lg text-gray-900 mb-2">{monthName}</h3>
-          <p className="text-gray-600">{monthEvents.length} gifts scheduled</p>
+          <h3 className="font-bold text-lg text-gray-900 mb-2">{monthName}</h3>
+          <p className="text-gray-600 font-medium">{monthEvents.length} gifts scheduled</p>
         </div>
       );
     }
@@ -176,30 +193,45 @@ const GiftsOverviewPage = () => {
     const startYear = Math.floor(currentYear / 10) * 10;
     const years = [];
     
-    for (let i = 0; i < 10; i++) {
-      const year = startYear + i;
-      const yearEvents = allEvents.filter(event => {
-        const eventDate = new Date(event.eventDate);
-        return eventDate.getFullYear() === year;
-      });
+    // Show previous 10, current 10, and future 10 decades worth of years
+    for (let decade = -1; decade <= 1; decade++) {
+      const decadeStartYear = startYear + (decade * 10);
       
-      years.push(
-        <div
-          key={year}
-          className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border border-gray-200 hover:border-purple-300"
-          onClick={() => {
-            setCurrentDate(new Date(year, 0, 1));
-            setCalendarView('year');
-          }}
-        >
-          <h3 className="font-semibold text-lg text-gray-900 mb-2">{year}</h3>
-          <p className="text-gray-600">{yearEvents.length} gifts scheduled</p>
-        </div>
-      );
+      for (let i = 0; i < 10; i++) {
+        const year = decadeStartYear + i;
+        const yearEvents = allEvents.filter(event => {
+          const eventDate = new Date(event.eventDate);
+          return eventDate.getFullYear() === year;
+        });
+        
+        const isCurrentDecade = decade === 0;
+        
+        years.push(
+          <div
+            key={year}
+            className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer border hover:border-black ${
+              isCurrentDecade 
+                ? 'bg-white border-gray-300' 
+                : 'bg-gray-50 border-gray-200'
+            }`}
+            onClick={() => {
+              setCurrentDate(new Date(year, 0, 1));
+              setCalendarView('year');
+            }}
+          >
+            <h3 className={`font-bold text-lg mb-2 ${isCurrentDecade ? 'text-gray-900' : 'text-gray-600'}`}>
+              {year}
+            </h3>
+            <p className={`font-medium ${isCurrentDecade ? 'text-gray-600' : 'text-gray-500'}`}>
+              {yearEvents.length} gifts scheduled
+            </p>
+          </div>
+        );
+      }
     }
     
     return (
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-5 gap-4">
         {years}
       </div>
     );
@@ -211,37 +243,37 @@ const GiftsOverviewPage = () => {
     const sortedItems = allItems.sort((a, b) => new Date(a.eventDate || a.date) - new Date(b.eventDate || b.date));
 
     return (
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-300">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-purple-100 to-pink-100">
+            <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Recipient/Event</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Type</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Date</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-b border-gray-300">Recipient/Event</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-b border-gray-300">Type</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-b border-gray-300">Date</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-b border-gray-300">Status</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 border-b border-gray-300">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {sortedItems.map((item, index) => {
                 if (item.isHoliday) {
                   return (
-                    <tr key={`holiday-${index}`} className="bg-pink-25 hover:bg-pink-50 transition-colors">
+                    <tr key={`holiday-${index}`} className="bg-gray-50 hover:bg-gray-100 transition-colors">
                       <td className="px-6 py-4">
-                        <span className="font-medium text-pink-700">{item.name}</span>
+                        <span className="font-semibold text-gray-700">{item.name}</span>
                       </td>
                       <td className="px-6 py-4 text-gray-600">Holiday</td>
                       <td className="px-6 py-4 text-gray-600">{formatDate(item.date)}</td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
                           Upcoming Holiday
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <button
                           onClick={() => handleAddGift(new Date(item.date))}
-                          className="text-purple-600 hover:text-purple-800 transition-colors"
+                          className="text-black hover:text-gray-600 transition-colors"
                         >
                           <Plus className="h-4 w-4" />
                         </button>
@@ -255,7 +287,7 @@ const GiftsOverviewPage = () => {
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div>
-                        <span className="font-medium text-gray-900">{item.friendName}</span>
+                        <span className="font-semibold text-gray-900">{item.friendName}</span>
                         {item.nickname && (
                           <span className="text-gray-500 ml-2">({item.nickname})</span>
                         )}
@@ -271,7 +303,7 @@ const GiftsOverviewPage = () => {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => handleEditGift(item)}
-                        className="text-purple-600 hover:text-purple-800 transition-colors"
+                        className="text-black hover:text-gray-600 transition-colors"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
@@ -295,7 +327,7 @@ const GiftsOverviewPage = () => {
           return currentDate.getFullYear().toString();
         case 'decade':
           const startYear = Math.floor(currentDate.getFullYear() / 10) * 10;
-          return `${startYear} - ${startYear + 9}`;
+          return `${startYear - 10} - ${startYear + 19}`;
         default:
           return '';
       }
@@ -322,23 +354,23 @@ const GiftsOverviewPage = () => {
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => getNavigationFunction()('prev')}
-          className="p-2 rounded-lg hover:bg-purple-100 transition-colors"
+          className="p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300"
         >
-          <ChevronLeft className="h-5 w-5 text-gray-600" />
+          <ChevronLeft className="h-5 w-5 text-gray-700" />
         </button>
         
         <button
           onClick={handleHeaderClick}
-          className="text-xl font-bold text-gray-900 hover:text-purple-600 transition-colors cursor-pointer"
+          className="text-2xl font-bold text-gray-900 hover:text-gray-600 transition-colors cursor-pointer px-4 py-2 rounded-lg hover:bg-gray-100"
         >
           {getHeaderText()}
         </button>
         
         <button
           onClick={() => getNavigationFunction()('next')}
-          className="p-2 rounded-lg hover:bg-purple-100 transition-colors"
+          className="p-3 rounded-lg hover:bg-gray-100 transition-colors border border-gray-300"
         >
-          <ChevronRight className="h-5 w-5 text-gray-600" />
+          <ChevronRight className="h-5 w-5 text-gray-700" />
         </button>
       </div>
     );
@@ -354,27 +386,27 @@ const GiftsOverviewPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-white min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-black">
             Your Gifts
           </h1>
-          <p className="text-gray-600 mt-2">
+          <p className="text-gray-600 mt-2 font-medium">
             {allEvents.length} gifts scheduled • Never miss a special moment
           </p>
         </div>
         
         <div className="flex items-center space-x-4">
           {/* View Toggle */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center bg-gray-100 rounded-lg p-1 border border-gray-300">
             <button
               onClick={() => setViewMode('calendar')}
               className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 viewMode === 'calendar'
-                  ? 'bg-white text-purple-700 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-black text-white shadow-sm'
+                  : 'text-gray-700 hover:text-gray-900'
               }`}
             >
               <Calendar className="h-4 w-4" />
@@ -384,8 +416,8 @@ const GiftsOverviewPage = () => {
               onClick={() => setViewMode('list')}
               className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 viewMode === 'list'
-                  ? 'bg-white text-purple-700 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-black text-white shadow-sm'
+                  : 'text-gray-700 hover:text-gray-900'
               }`}
             >
               <List className="h-4 w-4" />
@@ -396,7 +428,7 @@ const GiftsOverviewPage = () => {
           {/* Add Gift Button */}
           <button
             onClick={() => setCurrentPage('add-event')}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 flex items-center space-x-2 shadow-lg"
+            className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center space-x-2 shadow-lg border border-gray-300"
           >
             <Plus className="h-4 w-4" />
             <span>Add Gift</span>
@@ -417,10 +449,10 @@ const GiftsOverviewPage = () => {
       {/* Day Events Modal */}
       {showDayModal && selectedDay && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-96 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-96 overflow-y-auto border border-gray-300">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-bold text-gray-900">
                   {selectedDay.toLocaleDateString('en-US', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -430,7 +462,7 @@ const GiftsOverviewPage = () => {
                 </h3>
                 <button
                   onClick={() => setShowDayModal(false)}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 transition-colors text-2xl font-bold"
                 >
                   ×
                 </button>
@@ -441,7 +473,7 @@ const GiftsOverviewPage = () => {
                   <div key={event.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="flex justify-between items-start">
                       <div>
-                        <h4 className="font-medium text-gray-900">{event.friendName}</h4>
+                        <h4 className="font-semibold text-gray-900">{event.friendName}</h4>
                         <p className="text-sm text-gray-600">{event.eventType}</p>
                         {event.personalMessage && (
                           <p className="text-xs text-gray-500 mt-1">{event.personalMessage}</p>
@@ -449,7 +481,7 @@ const GiftsOverviewPage = () => {
                       </div>
                       <button
                         onClick={() => handleEditGift(event)}
-                        className="text-purple-600 hover:text-purple-800 transition-colors"
+                        className="text-black hover:text-gray-600 transition-colors"
                       >
                         <Edit className="h-4 w-4" />
                       </button>
@@ -463,7 +495,7 @@ const GiftsOverviewPage = () => {
                 
                 <button
                   onClick={() => handleAddGift(selectedDay)}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-4 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 flex items-center justify-center space-x-2"
+                  className="w-full bg-black text-white py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200 flex items-center justify-center space-x-2 border border-gray-300"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add Gift for this Date</span>
