@@ -1,4 +1,3 @@
-
 import { addDoc, collection } from 'firebase/firestore';
 
 // Format date for display
@@ -112,6 +111,27 @@ export const getMajorGiftingDays = () => {
     { date: '2025-12-25', name: 'Christmas', type: 'holiday' },
     { date: '2025-12-31', name: 'New Year\'s Eve', type: 'holiday' }
   ];
+};
+
+// Get holidays for a specific year
+export const getHolidays = (year) => {
+  // For now, we'll return the 2025 holidays for any year
+  // In a real app, you'd generate holidays based on the year
+  const holidays = [
+    { date: `${year}-01-01`, name: 'New Year\'s Day', type: 'holiday' },
+    { date: `${year}-02-14`, name: 'Valentine\'s Day', type: 'holiday' },
+    { date: `${year}-03-08`, name: 'International Women\'s Day', type: 'holiday' },
+    { date: `${year}-04-13`, name: 'Easter', type: 'holiday' },
+    { date: `${year}-05-11`, name: 'Mother\'s Day', type: 'holiday' },
+    { date: `${year}-06-15`, name: 'Father\'s Day', type: 'holiday' },
+    { date: `${year}-07-04`, name: 'Independence Day', type: 'holiday' },
+    { date: `${year}-10-31`, name: 'Halloween', type: 'holiday' },
+    { date: `${year}-11-27`, name: 'Thanksgiving', type: 'holiday' },
+    { date: `${year}-12-25`, name: 'Christmas', type: 'holiday' },
+    { date: `${year}-12-31`, name: 'New Year\'s Eve', type: 'holiday' }
+  ];
+  
+  return holidays;
 };
 
 // Check if a date is a major gifting day
