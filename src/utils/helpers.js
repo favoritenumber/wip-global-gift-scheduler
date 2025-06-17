@@ -147,488 +147,151 @@ export const isGiftingDay = (dateString) => {
 
 // Add comprehensive dummy data for June and July 2025
 export const addDummyData = async (db, userId) => {
-  const eventsCollection = collection(db, 'artifacts', 'gift-scheduler-app', 'users', userId, 'events');
+  const eventsRef = collection(db, 'artifacts', 'gift-scheduler-app', 'users', userId, 'events');
   
-  const dummyEvents = [
-    // Sarah Johnson - Multiple gifts (fully configured)
-    {
-      friendName: 'Sarah Johnson',
-      nickname: 'Sarah',
-      relationship: 'Friend',
-      eventType: 'Birthday',
-      eventDate: '2025-06-15',
-      personalMessage: 'Happy Birthday Sarah! Hope your special day is as amazing as you are! 🎉',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1494790108755-2616b612b787?w=400',
-      address: {
-        street: '123 Maple Street',
-        city: 'San Francisco',
-        state: 'CA',
-        zipCode: '94102',
-        country: 'USA'
-      },
-      birthday: '1990-06-15',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    // Michael Chen - Work colleague (in progress)
-    {
-      friendName: 'Michael Chen',
-      nickname: 'Mike',
-      relationship: 'Colleague',
-      eventType: 'Birthday',
-      eventDate: '2025-06-22',
-      personalMessage: 'Happy Birthday Mike! Thanks for being such a great colleague!',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '456 Oak Avenue',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        country: 'USA'
-      },
-      birthday: '1985-06-22',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    // Emma Wilson - Wife (fully configured)
-    {
-      friendName: 'Emma Wilson',
-      nickname: 'Em',
-      relationship: 'Wife',
-      eventType: 'Birthday',
-      eventDate: '2025-07-03',
-      personalMessage: 'Happy Birthday to my amazing wife! You make every day brighter! ❤️',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=400',
-      address: {
-        street: '789 Pine Road',
-        city: 'Chicago',
-        state: 'IL',
-        zipCode: '60601',
-        country: 'USA'
-      },
-      birthday: '1992-07-03',
-      anniversary: '2018-09-15',
-      isRecurring: true
-    },
-    
-    // David Miller - Father (not started)
-    {
-      friendName: 'David Miller',
-      nickname: 'Dad',
-      relationship: 'Family',
-      eventType: 'Father\'s Day',
-      eventDate: '2025-06-15',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1955-03-20',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    // Lisa Garcia - Friend (not started)
-    {
-      friendName: 'Lisa Garcia',
-      nickname: 'Lisa',
-      relationship: 'Friend',
-      eventType: 'Birthday',
-      eventDate: '2025-07-18',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1988-07-18',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    // James Rodriguez - Wedding (fully configured)
-    {
-      friendName: 'James Rodriguez',
-      nickname: 'Jimmy',
-      relationship: 'Friend',
-      eventType: 'Wedding',
-      eventDate: '2025-07-25',
-      personalMessage: 'Congratulations on your wedding day! Wishing you both a lifetime of happiness!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
-      address: {
-        street: '654 Cedar Lane',
-        city: 'Miami',
-        state: 'FL',
-        zipCode: '33101',
-        country: 'USA'
-      },
-      birthday: '1990-04-12',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    // Maria Santos - Colleague (in progress)
-    {
-      friendName: 'Maria Santos',
-      nickname: 'Maria',
-      relationship: 'Colleague',
-      eventType: 'Birthday',
-      eventDate: '2025-06-08',
-      personalMessage: 'Happy Birthday Maria! Hope you have a wonderful day!',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '987 Birch Drive',
-        city: 'Seattle',
-        state: 'WA',
-        zipCode: '98101',
-        country: 'USA'
-      },
-      birthday: '1987-06-08',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    // Robert Taylor - Uncle (not started)
-    {
-      friendName: 'Robert Taylor',
-      nickname: 'Uncle Bob',
-      relationship: 'Family',
-      eventType: 'Birthday',
-      eventDate: '2025-07-12',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1970-07-12',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    // Additional 17 gifts for variety (mix of all statuses)
-    {
-      friendName: 'Jennifer Lee',
-      nickname: 'Jen',
-      relationship: 'Friend',
-      eventType: 'Graduation',
-      eventDate: '2025-06-10',
-      personalMessage: 'Congratulations on your graduation! So proud of you!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
-      address: {
-        street: '234 Willow St',
-        city: 'Portland',
-        state: 'OR',
-        zipCode: '97201',
-        country: 'USA'
-      },
-      birthday: '1995-03-14',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Carlos Mendez',
-      nickname: 'Carlos',
-      relationship: 'Romantic Partner',
-      eventType: 'Anniversary',
-      eventDate: '2025-06-20',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1989-11-22',
-      anniversary: '2022-06-20',
-      isRecurring: true
-    },
-    
-    {
-      friendName: 'Amanda Foster',
-      nickname: 'Mandy',
-      relationship: 'Friend',
-      eventType: 'Baby Shower',
-      eventDate: '2025-06-28',
-      personalMessage: 'Congratulations on your upcoming little one!',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '567 Elm Street',
-        city: 'Denver',
-        state: 'CO',
-        zipCode: '80201',
-        country: 'USA'
-      },
-      birthday: '1991-08-15',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Kevin O\'Connor',
-      nickname: 'Kev',
-      relationship: 'Colleague',
-      eventType: 'Work Anniversary',
-      eventDate: '2025-07-05',
-      personalMessage: 'Congratulations on 5 years with the company!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
-      address: {
-        street: '890 Spruce Ave',
-        city: 'Boston',
-        state: 'MA',
-        zipCode: '02101',
-        country: 'USA'
-      },
-      birthday: '1983-02-28',
-      anniversary: '2020-07-05',
-      isRecurring: true
-    },
-    
-    {
-      friendName: 'Rachel Green',
-      nickname: 'Rachel',
-      relationship: 'Friend',
-      eventType: 'Housewarming',
-      eventDate: '2025-07-15',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1986-09-10',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Thomas Anderson',
-      nickname: 'Tom',
-      relationship: 'Family',
-      eventType: 'Birthday',
-      eventDate: '2025-06-05',
-      personalMessage: 'Happy Birthday cousin! Hope it\'s a great one!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
-      address: {
-        street: '345 Aspen Way',
-        city: 'Phoenix',
-        state: 'AZ',
-        zipCode: '85001',
-        country: 'USA'
-      },
-      birthday: '1992-06-05',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    {
-      friendName: 'Sophie Turner',
-      nickname: 'Sophie',
-      relationship: 'Friend',
-      eventType: 'Birthday',
-      eventDate: '2025-06-30',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1994-06-30',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Mark Davis',
-      nickname: 'Mark',
-      relationship: 'Colleague',
-      eventType: 'Promotion',
-      eventDate: '2025-07-08',
-      personalMessage: 'Congratulations on your well-deserved promotion!',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '123 Corporate Blvd',
-        city: 'Atlanta',
-        state: 'GA',
-        zipCode: '30301',
-        country: 'USA'
-      },
-      birthday: '1980-01-15',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Isabella Rodriguez',
-      nickname: 'Bella',
-      relationship: 'Family',
-      eventType: 'Birthday',
-      eventDate: '2025-07-20',
-      personalMessage: 'Happy Sweet 16 Bella! You\'re growing up so fast!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
-      address: {
-        street: '678 Valley Road',
-        city: 'Las Vegas',
-        state: 'NV',
-        zipCode: '89101',
-        country: 'USA'
-      },
-      birthday: '2009-07-20',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    {
-      friendName: 'Alexander Kim',
-      nickname: 'Alex',
-      relationship: 'Friend',
-      eventType: 'Birthday',
-      eventDate: '2025-06-12',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1987-06-12',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Olivia Brown',
-      nickname: 'Liv',
-      relationship: 'Friend',
-      eventType: 'Wedding',
-      eventDate: '2025-07-30',
-      personalMessage: 'Wishing you a lifetime of love and happiness!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400',
-      address: {
-        street: '456 Sunshine Dr',
-        city: 'San Diego',
-        state: 'CA',
-        zipCode: '92101',
-        country: 'USA'
-      },
-      birthday: '1993-04-18',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Daniel Thompson',
-      nickname: 'Dan',
-      relationship: 'Colleague',
-      eventType: 'Birthday',
-      eventDate: '2025-06-25',
-      personalMessage: 'Happy Birthday Dan! Thanks for all your hard work!',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '789 Office Park',
-        city: 'Dallas',
-        state: 'TX',
-        zipCode: '75201',
-        country: 'USA'
-      },
-      birthday: '1985-06-25',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    {
-      friendName: 'Grace Williams',
-      nickname: 'Grace',
-      relationship: 'Family',
-      eventType: 'Birthday',
-      eventDate: '2025-07-01',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1975-07-01',
-      anniversary: '',
-      isRecurring: false
-    },
-    
-    {
-      friendName: 'Ryan Murphy',
-      nickname: 'Ryan',
-      relationship: 'Friend',
-      eventType: 'Birthday',
-      eventDate: '2025-07-10',
-      personalMessage: 'Happy Birthday Ryan! Hope you have an awesome day!',
-      polaroidPhotoUrl: 'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=400',
-      address: {
-        street: '234 Park Avenue',
-        city: 'Minneapolis',
-        state: 'MN',
-        zipCode: '55401',
-        country: 'USA'
-      },
-      birthday: '1990-07-10',
-      anniversary: '',
-      isRecurring: true
-    },
-    
-    {
-      friendName: 'Hannah Clark',
-      nickname: 'Hannah',
-      relationship: 'Friend',
-      eventType: 'Graduation',
-      eventDate: '2025-06-18',
-      personalMessage: '',
-      polaroidPhotoUrl: '',
-      address: {
-        street: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'USA'
-      },
-      birthday: '1996-12-03',
-      anniversary: '',
-      isRecurring: false
-    }
+  console.log('Adding comprehensive dummy data...');
+  
+  // Define the 20 people with their details
+  const people = [
+    { name: 'Priya Patel', nickname: 'Pri', birthday: '1990-03-15', anniversary: '2018-10-26' },
+    { name: 'David Chen', nickname: 'Dave', birthday: '1985-07-22', anniversary: '2019-06-01' },
+    { name: 'Maria Garcia', nickname: '', birthday: '1992-09-05', anniversary: '' },
+    { name: 'John "Sully" Sullivan', nickname: 'Sully', birthday: '1988-01-30', anniversary: '' },
+    { name: 'Fatima Al-Jamil', nickname: '', birthday: '1993-11-12', anniversary: '2020-05-20' },
+    { name: 'Liam O\'Connell', nickname: '', birthday: '1987-02-08', anniversary: '' },
+    { name: 'Chloe Nguyen', nickname: '', birthday: '1991-08-19', anniversary: '2021-09-17' },
+    { name: 'Ben Carter', nickname: 'Benny', birthday: '1989-06-04', anniversary: '' },
+    { name: 'Sophia Rossi', nickname: 'Soph', birthday: '1994-12-25', anniversary: '' },
+    { name: 'Leo Schmidt', nickname: '', birthday: '1986-05-10', anniversary: '2017-07-15' },
+    { name: 'Isabella Costa', nickname: 'Bella', birthday: '1990-04-03', anniversary: '' },
+    { name: 'Noah Takahashi', nickname: '', birthday: '1992-10-02', anniversary: '' },
+    { name: 'Ava Williams', nickname: '', birthday: '1988-07-07', anniversary: '2020-08-08' },
+    { name: 'James Kim', nickname: 'Jimmy', birthday: '1991-03-29', anniversary: '' },
+    { name: 'Olivia Martinez', nickname: 'Liv', birthday: '1993-06-30', anniversary: '' },
+    { name: 'Michael Johnson', nickname: 'Mike', birthday: '', anniversary: '' },
+    { name: 'Emma Dubois', nickname: '', birthday: '1989-01-01', anniversary: '2019-12-01' },
+    { name: 'William Taylor', nickname: 'Will', birthday: '', anniversary: '2018-11-05' },
+    { name: 'Grace Lee', nickname: '', birthday: '1992-08-11', anniversary: '' },
+    { name: 'Daniel Abebe', nickname: 'Dan', birthday: '', anniversary: '' }
   ];
-  
-  console.log('Adding enhanced dummy data with 25 gifts...');
-  
-  for (const event of dummyEvents) {
+
+  // Define all 45 gifts as specified
+  const gifts = [
+    { friendName: 'David Chen', eventType: 'Anniversary', eventDate: '2025-06-01', giftType: 'Generous Gesture ($100)', giftStatus: 'delivered' },
+    { friendName: 'Ben Carter', eventType: 'Birthday', eventDate: '2025-06-04', giftType: 'Thoughtful Present ($50)', giftStatus: 'scheduled' },
+    { friendName: 'Priya Patel', eventType: 'Holiday', eventDate: '2025-06-05', giftType: 'Personal Note and photo ($5)', giftStatus: 'in-progress' },
+    { friendName: 'John "Sully" Sullivan', eventType: 'Thank You', eventDate: '2025-06-06', giftType: 'Sweet Something ($25)', giftStatus: 'not-started' },
+    { friendName: 'Fatima Al-Jamil', eventType: 'Holiday', eventDate: '2025-06-08', giftType: 'Thoughtful Present ($50)', giftStatus: 'delivered' },
+    { friendName: 'Liam O\'Connell', eventType: 'Get Well Soon', eventDate: '2025-06-10', giftType: 'Sweet Something ($25)', giftStatus: 'scheduled' },
+    { friendName: 'Chloe Nguyen', eventType: 'Congratulations', eventDate: '2025-06-11', giftType: 'Personal Note and photo ($5)', giftStatus: 'in-progress' },
+    { friendName: 'Ben Carter', eventType: 'Holiday', eventDate: '2025-06-12', giftType: 'Thoughtful Present ($50)', giftStatus: 'not-started' },
+    { friendName: 'Sophia Rossi', eventType: 'Holiday', eventDate: '2025-06-14', giftType: 'Generous Gesture ($100)', giftStatus: 'delivered' },
+    { friendName: 'Dad', eventType: 'Father\'s Day', eventDate: '2025-06-15', giftType: 'Generous Gesture ($100)', giftStatus: 'scheduled' },
+    { friendName: 'Isabella Costa', eventType: 'Thank You', eventDate: '2025-06-16', giftType: 'Personal Note and photo ($5)', giftStatus: 'in-progress' },
+    { friendName: 'Noah Takahashi', eventType: 'Holiday', eventDate: '2025-06-17', giftType: 'Sweet Something ($25)', giftStatus: 'not-started' },
+    { friendName: 'Ava Williams', eventType: 'Congratulations', eventDate: '2025-06-18', giftType: 'Thoughtful Present ($50)', giftStatus: 'delivered' },
+    { friendName: 'James Kim', eventType: 'Holiday', eventDate: '2025-06-19', giftType: 'Personal Note and photo ($5)', giftStatus: 'scheduled' },
+    { friendName: 'Olivia Martinez', eventType: 'Holiday', eventDate: '2025-06-20', giftType: 'Sweet Something ($25)', giftStatus: 'in-progress' },
+    { friendName: 'Michael Johnson', eventType: 'Holiday', eventDate: '2025-06-21', giftType: 'Thoughtful Present ($50)', giftStatus: 'not-started' },
+    { friendName: 'Emma Dubois', eventType: 'Holiday', eventDate: '2025-06-22', giftType: 'Personal Note and photo ($5)', giftStatus: 'delivered' },
+    { friendName: 'William Taylor', eventType: 'Holiday', eventDate: '2025-06-23', giftType: 'Sweet Something ($25)', giftStatus: 'scheduled' },
+    { friendName: 'Grace Lee', eventType: 'Congratulations', eventDate: '2025-06-24', giftType: 'Thoughtful Present ($50)', giftStatus: 'in-progress' },
+    { friendName: 'Daniel Abebe', eventType: 'Holiday', eventDate: '2025-06-25', giftType: 'Personal Note and photo ($5)', giftStatus: 'not-started' },
+    { friendName: 'Priya Patel', eventType: 'Anniversary', eventDate: '2025-06-26', giftType: 'Generous Gesture ($100)', giftStatus: 'delivered' },
+    { friendName: 'David Chen', eventType: 'Thank You', eventDate: '2025-06-27', giftType: 'Sweet Something ($25)', giftStatus: 'scheduled' },
+    { friendName: 'Maria Garcia', eventType: 'Holiday', eventDate: '2025-06-28', giftType: 'Thoughtful Present ($50)', giftStatus: 'in-progress' },
+    { friendName: 'John "Sully" Sullivan', eventType: 'Holiday', eventDate: '2025-06-29', giftType: 'Personal Note and photo ($5)', giftStatus: 'not-started' },
+    { friendName: 'Olivia Martinez', eventType: 'Birthday', eventDate: '2025-06-30', giftType: 'Generous Gesture ($100)', giftStatus: 'delivered' },
+    { friendName: 'Fatima Al-Jamil', eventType: 'Thank You', eventDate: '2025-07-01', giftType: 'Sweet Something ($25)', giftStatus: 'scheduled' },
+    { friendName: 'Liam O\'Connell', eventType: 'Congratulations', eventDate: '2025-07-02', giftType: 'Thoughtful Present ($50)', giftStatus: 'in-progress' },
+    { friendName: 'Chloe Nguyen', eventType: 'Holiday', eventDate: '2025-07-03', giftType: 'Personal Note and photo ($5)', giftStatus: 'not-started' },
+    { friendName: 'USA', eventType: 'Independence Day', eventDate: '2025-07-04', giftType: 'Personal Note and photo ($5)', giftStatus: 'delivered' },
+    { friendName: 'Ben Carter', eventType: 'Congratulations', eventDate: '2025-07-05', giftType: 'Sweet Something ($25)', giftStatus: 'scheduled' },
+    { friendName: 'Sophia Rossi', eventType: 'Thank You', eventDate: '2025-07-06', giftType: 'Thoughtful Present ($50)', giftStatus: 'in-progress' },
+    { friendName: 'Ava Williams', eventType: 'Birthday', eventDate: '2025-07-07', giftType: 'Generous Gesture ($100)', giftStatus: 'not-started' },
+    { friendName: 'Isabella Costa', eventType: 'Holiday', eventDate: '2025-07-08', giftType: 'Personal Note and photo ($5)', giftStatus: 'delivered' },
+    { friendName: 'Noah Takahashi', eventType: 'Congratulations', eventDate: '2025-07-09', giftType: 'Sweet Something ($25)', giftStatus: 'scheduled' },
+    { friendName: 'James Kim', eventType: 'Thank You', eventDate: '2025-07-10', giftType: 'Thoughtful Present ($50)', giftStatus: 'in-progress' },
+    { friendName: 'Michael Johnson', eventType: 'Holiday', eventDate: '2025-07-11', giftType: 'Personal Note and photo ($5)', giftStatus: 'not-started' },
+    { friendName: 'Emma Dubois', eventType: 'Congratulations', eventDate: '2025-07-12', giftType: 'Sweet Something ($25)', giftStatus: 'delivered' },
+    { friendName: 'William Taylor', eventType: 'Thank You', eventDate: '2025-07-13', giftType: 'Thoughtful Present ($50)', giftStatus: 'scheduled' },
+    { friendName: 'Grace Lee', eventType: 'Holiday', eventDate: '2025-07-14', giftType: 'Personal Note and photo ($5)', giftStatus: 'in-progress' },
+    { friendName: 'Leo Schmidt', eventType: 'Anniversary', eventDate: '2025-07-15', giftType: 'Generous Gesture ($100)', giftStatus: 'not-started' },
+    { friendName: 'Daniel Abebe', eventType: 'Congratulations', eventDate: '2025-07-16', giftType: 'Sweet Something ($25)', giftStatus: 'delivered' },
+    { friendName: 'David Chen', eventType: 'Birthday', eventDate: '2025-07-22', giftType: 'Generous Gesture ($100)', giftStatus: 'scheduled' },
+    { friendName: 'Priya Patel', eventType: 'Thank You', eventDate: '2025-07-24', giftType: 'Sweet Something ($25)', giftStatus: 'in-progress' },
+    { friendName: 'Maria Garcia', eventType: 'Congratulations', eventDate: '2025-07-28', giftType: 'Thoughtful Present ($50)', giftStatus: 'not-started' },
+    { friendName: 'John "Sully" Sullivan', eventType: 'Thank You', eventDate: '2025-07-30', giftType: 'Personal Note and photo ($5)', giftStatus: 'delivered' }
+  ];
+
+  // Generate complete address data
+  const addresses = [
+    { street: '123 Maple St', city: 'San Francisco', state: 'CA', zipCode: '94102', country: 'USA' },
+    { street: '456 Oak Ave', city: 'Los Angeles', state: 'CA', zipCode: '90210', country: 'USA' },
+    { street: '789 Pine Rd', city: 'New York', state: 'NY', zipCode: '10001', country: 'USA' },
+    { street: '321 Elm Dr', city: 'Chicago', state: 'IL', zipCode: '60601', country: 'USA' },
+    { street: '654 Cedar Ln', city: 'Houston', state: 'TX', zipCode: '77001', country: 'USA' },
+    { street: '987 Birch St', city: 'Phoenix', state: 'AZ', zipCode: '85001', country: 'USA' },
+    { street: '147 Willow Way', city: 'Philadelphia', state: 'PA', zipCode: '19101', country: 'USA' },
+    { street: '258 Spruce Ct', city: 'San Antonio', state: 'TX', zipCode: '78201', country: 'USA' },
+    { street: '369 Poplar Pl', city: 'San Diego', state: 'CA', zipCode: '92101', country: 'USA' },
+    { street: '741 Cherry Ave', city: 'Dallas', state: 'TX', zipCode: '75201', country: 'USA' },
+    { street: '852 Ash Blvd', city: 'San Jose', state: 'CA', zipCode: '95101', country: 'USA' },
+    { street: '963 Walnut St', city: 'Austin', state: 'TX', zipCode: '73301', country: 'USA' },
+    { street: '159 Hickory Rd', city: 'Jacksonville', state: 'FL', zipCode: '32099', country: 'USA' },
+    { street: '357 Pecan Dr', city: 'Fort Worth', state: 'TX', zipCode: '76101', country: 'USA' },
+    { street: '468 Magnolia Ln', city: 'Columbus', state: 'OH', zipCode: '43085', country: 'USA' },
+    { street: '579 Dogwood Way', city: 'Charlotte', state: 'NC', zipCode: '28201', country: 'USA' },
+    { street: '680 Sycamore St', city: 'San Francisco', state: 'CA', zipCode: '94103', country: 'USA' },
+    { street: '791 Redwood Ave', city: 'Indianapolis', state: 'IN', zipCode: '46201', country: 'USA' },
+    { street: '802 Cypress Ct', city: 'Seattle', state: 'WA', zipCode: '98101', country: 'USA' },
+    { street: '913 Juniper Pl', city: 'Denver', state: 'CO', zipCode: '80201', country: 'USA' }
+  ];
+
+  // Create gift events with full person data
+  for (let i = 0; i < gifts.length; i++) {
+    const gift = gifts[i];
+    const person = people.find(p => p.name === gift.friendName) || { name: gift.friendName, nickname: '', birthday: '', anniversary: '' };
+    const address = addresses[i % addresses.length];
+    
+    const eventData = {
+      friendName: gift.friendName,
+      nickname: person.nickname,
+      birthday: person.birthday,
+      anniversary: person.anniversary,
+      address: address,
+      eventType: gift.eventType,
+      eventDate: gift.eventDate,
+      giftType: gift.giftType,
+      giftStatus: gift.giftStatus,
+      personalMessage: getRandomMessage(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
     try {
-      await addDoc(eventsCollection, event);
+      await addDoc(eventsRef, eventData);
+      console.log(`Added gift event: ${gift.friendName} - ${gift.eventType} on ${gift.eventDate}`);
     } catch (error) {
-      console.error('Error adding dummy event:', error);
+      console.error('Error adding gift event:', error);
     }
   }
-  
-  console.log('Enhanced dummy data added successfully');
+
+  console.log('Comprehensive dummy data added successfully!');
+};
+
+const getRandomMessage = () => {
+  const messages = [
+    'Hope this brightens your day!',
+    'Thinking of you and sending love.',
+    'You deserve something special.',
+    'A little something to show I care.',
+    'Hope you love this as much as I love you!',
+    'Sending you warm wishes and good vibes.',
+    'You mean the world to me.',
+    'Just because you\'re amazing!',
+    'Hope this puts a smile on your face.',
+    'With all my love and best wishes.'
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
 };
