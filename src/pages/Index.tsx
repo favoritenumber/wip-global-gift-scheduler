@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { collection, onSnapshot, query } from 'firebase/firestore';
@@ -7,6 +6,7 @@ import { addDummyData } from '../utils/helpers';
 import { FirebaseProvider } from '../contexts/FirebaseContext';
 import Header from '../components/Header';
 import GiftsOverviewPage from '../components/GiftsOverviewPage';
+import AddEditEventPage from '../components/AddEditEventPage';
 
 const Index = () => {
   // Core app state
@@ -146,22 +146,7 @@ const Index = () => {
               </div>
             </div>
           )}
-          {currentPage === 'add-event' && (
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-8">
-                {editingEvent ? 'Edit Gift' : 'Add New Gift'}
-              </h1>
-              <div className="bg-white rounded-lg shadow-sm border p-8 text-center">
-                <p className="text-gray-600">Add/Edit gift form coming soon...</p>
-                <button
-                  onClick={() => setCurrentPage('gifts')}
-                  className="mt-4 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
-                >
-                  Back to Gifts
-                </button>
-              </div>
-            </div>
-          )}
+          {currentPage === 'add-event' && <AddEditEventPage />}
         </main>
       </div>
     </FirebaseProvider>
