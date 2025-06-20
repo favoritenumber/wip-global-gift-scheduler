@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -8,24 +7,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Gift } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-
 export const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [signInData, setSignInData] = useState({ email: '', password: '' });
-  const [signUpData, setSignUpData] = useState({ email: '', password: '', fullName: '', confirmPassword: '' });
+  const [signInData, setSignInData] = useState({
+    email: '',
+    password: ''
+  });
+  const [signUpData, setSignUpData] = useState({
+    email: '',
+    password: '',
+    fullName: '',
+    confirmPassword: ''
+  });
   const [resetEmail, setResetEmail] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [showResetForm, setShowResetForm] = useState(false);
-  const { signIn, signUp } = useAuth();
-
+  const {
+    signIn,
+    signUp
+  } = useAuth();
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
     try {
-      const { error } = await signIn(signInData.email, signInData.password);
+      const {
+        error
+      } = await signIn(signInData.email, signInData.password);
       if (error) {
         setError(error.message);
       }
@@ -35,20 +44,19 @@ export const AuthPage = () => {
     }
     setIsLoading(false);
   };
-
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
     if (signUpData.password !== signUpData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
-    
     try {
-      const { error } = await signUp(signUpData.email, signUpData.password, signUpData.fullName);
+      const {
+        error
+      } = await signUp(signUpData.email, signUpData.password, signUpData.fullName);
       if (error) {
         setError(error.message);
       } else {
@@ -60,18 +68,17 @@ export const AuthPage = () => {
     }
     setIsLoading(false);
   };
-
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
     setMessage('');
-    
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/`,
+      const {
+        error
+      } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/`
       });
-      
       if (error) {
         setError(error.message);
       } else {
@@ -85,9 +92,7 @@ export const AuthPage = () => {
     }
     setIsLoading(false);
   };
-
-  return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+  return <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
@@ -107,8 +112,7 @@ export const AuthPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {!showResetForm ? (
-              <Tabs defaultValue="signin" className="w-full">
+            {!showResetForm ? <Tabs defaultValue="signin" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="signin">Sign In</TabsTrigger>
                   <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -118,42 +122,26 @@ export const AuthPage = () => {
                   <form onSubmit={handleSignIn} className="space-y-4">
                     <div>
                       <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={signInData.email}
-                        onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
-                        required
-                      />
+                      <Input id="email" type="email" placeholder="Enter your email" value={signInData.email} onChange={e => setSignInData({
+                    ...signInData,
+                    email: e.target.value
+                  })} required />
                     </div>
                     <div>
                       <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        value={signInData.password}
-                        onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
-                        required
-                      />
+                      <Input id="password" type="password" placeholder="Enter your password" value={signInData.password} onChange={e => setSignInData({
+                    ...signInData,
+                    password: e.target.value
+                  })} required />
                     </div>
                     <div className="text-center">
-                      <button
-                        type="button"
-                        onClick={() => setShowResetForm(true)}
-                        className="text-sm text-blue-600 hover:text-blue-800 underline"
-                      >
+                      <button type="button" onClick={() => setShowResetForm(true)} className="text-sm text-blue-600 hover:text-blue-800 underline">
                         Forgot your password?
                       </button>
                     </div>
-                    {error && (
-                      <div className="text-red-600 text-sm">{error}</div>
-                    )}
-                    {message && (
-                      <div className="text-green-600 text-sm">{message}</div>
-                    )}
-                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                    {error && <div className="text-red-600 text-sm">{error}</div>}
+                    {message && <div className="text-green-600 text-sm">{message}</div>}
+                    <Button type="submit" disabled={isLoading} className="w-full bg-blue-600 hover:bg-blue-700 text-slate-50">
                       {isLoading ? 'Signing in...' : 'Sign In'}
                     </Button>
                   </form>
@@ -163,62 +151,40 @@ export const AuthPage = () => {
                   <form onSubmit={handleSignUp} className="space-y-4">
                     <div>
                       <Label htmlFor="fullName">Full Name</Label>
-                      <Input
-                        id="fullName"
-                        type="text"
-                        placeholder="Enter your full name"
-                        value={signUpData.fullName}
-                        onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
-                        required
-                      />
+                      <Input id="fullName" type="text" placeholder="Enter your full name" value={signUpData.fullName} onChange={e => setSignUpData({
+                    ...signUpData,
+                    fullName: e.target.value
+                  })} required />
                     </div>
                     <div>
                       <Label htmlFor="signupEmail">Email</Label>
-                      <Input
-                        id="signupEmail"
-                        type="email"
-                        placeholder="Enter your email"
-                        value={signUpData.email}
-                        onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
-                        required
-                      />
+                      <Input id="signupEmail" type="email" placeholder="Enter your email" value={signUpData.email} onChange={e => setSignUpData({
+                    ...signUpData,
+                    email: e.target.value
+                  })} required />
                     </div>
                     <div>
                       <Label htmlFor="signupPassword">Password</Label>
-                      <Input
-                        id="signupPassword"
-                        type="password"
-                        placeholder="Enter your password"
-                        value={signUpData.password}
-                        onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
-                        required
-                      />
+                      <Input id="signupPassword" type="password" placeholder="Enter your password" value={signUpData.password} onChange={e => setSignUpData({
+                    ...signUpData,
+                    password: e.target.value
+                  })} required />
                     </div>
                     <div>
                       <Label htmlFor="confirmPassword">Confirm Password</Label>
-                      <Input
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="Confirm your password"
-                        value={signUpData.confirmPassword}
-                        onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
-                        required
-                      />
+                      <Input id="confirmPassword" type="password" placeholder="Confirm your password" value={signUpData.confirmPassword} onChange={e => setSignUpData({
+                    ...signUpData,
+                    confirmPassword: e.target.value
+                  })} required />
                     </div>
-                    {error && (
-                      <div className="text-red-600 text-sm">{error}</div>
-                    )}
-                    {message && (
-                      <div className="text-green-600 text-sm">{message}</div>
-                    )}
+                    {error && <div className="text-red-600 text-sm">{error}</div>}
+                    {message && <div className="text-green-600 text-sm">{message}</div>}
                     <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                       {isLoading ? 'Creating account...' : 'Sign Up'}
                     </Button>
                   </form>
                 </TabsContent>
-              </Tabs>
-            ) : (
-              <div className="space-y-4">
+              </Tabs> : <div className="space-y-4">
                 <div className="text-center">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">Reset Password</h3>
                   <p className="text-gray-600 text-sm mb-4">
@@ -228,42 +194,25 @@ export const AuthPage = () => {
                 <form onSubmit={handlePasswordReset} className="space-y-4">
                   <div>
                     <Label htmlFor="resetEmail">Email</Label>
-                    <Input
-                      id="resetEmail"
-                      type="email"
-                      placeholder="Enter your email"
-                      value={resetEmail}
-                      onChange={(e) => setResetEmail(e.target.value)}
-                      required
-                    />
+                    <Input id="resetEmail" type="email" placeholder="Enter your email" value={resetEmail} onChange={e => setResetEmail(e.target.value)} required />
                   </div>
-                  {error && (
-                    <div className="text-red-600 text-sm">{error}</div>
-                  )}
-                  {message && (
-                    <div className="text-green-600 text-sm">{message}</div>
-                  )}
+                  {error && <div className="text-red-600 text-sm">{error}</div>}
+                  {message && <div className="text-green-600 text-sm">{message}</div>}
                   <div className="flex space-x-2">
                     <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                       {isLoading ? 'Sending...' : 'Send Reset Link'}
                     </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => {
-                        setShowResetForm(false);
-                        setError('');
-                        setMessage('');
-                        setResetEmail('');
-                      }}
-                      disabled={isLoading}
-                    >
+                    <Button type="button" variant="outline" onClick={() => {
+                  setShowResetForm(false);
+                  setError('');
+                  setMessage('');
+                  setResetEmail('');
+                }} disabled={isLoading}>
                       Cancel
                     </Button>
                   </div>
                 </form>
-              </div>
-            )}
+              </div>}
           </CardContent>
         </Card>
 
@@ -273,6 +222,5 @@ export const AuthPage = () => {
           </p>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
