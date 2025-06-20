@@ -9,7 +9,119 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      gifts: {
+        Row: {
+          created_at: string | null
+          event_date: string | null
+          event_type: string | null
+          gift_amount: string | null
+          gift_id_string: string | null
+          id: string
+          personal_message: string | null
+          photo_url: string | null
+          recipient_id: string
+          relationship: string | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_date?: string | null
+          event_type?: string | null
+          gift_amount?: string | null
+          gift_id_string?: string | null
+          id?: string
+          personal_message?: string | null
+          photo_url?: string | null
+          recipient_id: string
+          relationship?: string | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_date?: string | null
+          event_type?: string | null
+          gift_amount?: string | null
+          gift_id_string?: string | null
+          id?: string
+          personal_message?: string | null
+          photo_url?: string | null
+          recipient_id?: string
+          relationship?: string | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gifts_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      people: {
+        Row: {
+          address: Json | null
+          anniversary: string | null
+          birthday: string | null
+          created_at: string | null
+          id: string
+          name: string
+          nickname: string | null
+          user_id: string
+        }
+        Insert: {
+          address?: Json | null
+          anniversary?: string | null
+          birthday?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          nickname?: string | null
+          user_id: string
+        }
+        Update: {
+          address?: Json | null
+          anniversary?: string | null
+          birthday?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          nickname?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          defaults: Json | null
+          email: string | null
+          full_name: string | null
+          id: string
+          notifications: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          defaults?: Json | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          notifications?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          defaults?: Json | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          notifications?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
