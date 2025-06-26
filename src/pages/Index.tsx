@@ -131,9 +131,9 @@ const MainApp = () => {
 
 const Index = () => {
   return (
-    <AuthProvider>
+    // <AuthProvider>
       <MainApp />
-    </AuthProvider>
+    // </AuthProvider>
   );
 };
 
