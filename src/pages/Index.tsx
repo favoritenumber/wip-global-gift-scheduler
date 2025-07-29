@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
-import { AuthPage } from '@/components/AuthPage';
+import { useUser } from '@clerk/clerk-react';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import GiftsOverviewPage from '@/components/GiftsOverviewPage';
@@ -10,8 +9,8 @@ import PeoplePage from '@/components/PeoplePage';
 import SettingsPage from '@/components/SettingsPage';
 import SupportPage from '@/components/SupportPage';
 
-const MainApp = () => {
-  const { user, loading } = useAuth();
+const Index = () => {
+  const { user, isLoaded } = useUser();
   const [currentPage, setCurrentPage] = useState('gifts');
   const [editingEvent, setEditingEvent] = useState(null);
   const [prefillDate, setPrefillDate] = useState('');
@@ -65,7 +64,7 @@ const MainApp = () => {
     }
   };
 
-  if (loading) {
+  if (!isLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
@@ -77,9 +76,7 @@ const MainApp = () => {
     );
   }
 
-  if (!user) {
-    return <AuthPage />;
-  }
+  // This component will only render when user is signed in due to App.tsx routing
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -129,12 +126,5 @@ const MainApp = () => {
   );
 };
 
-const Index = () => {
-  return (
-    <AuthProvider>
-      <MainApp />
-    </AuthProvider>
-  );
-};
 
 export default Index;
