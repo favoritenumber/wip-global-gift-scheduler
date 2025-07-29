@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { Gift, Users, Settings, HelpCircle, LogOut } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useClerk } from '@clerk/clerk-react';
 import { Button } from '@/components/ui/button';
 
 const Header = ({ currentPage, setCurrentPage, setEditingEvent }) => {
-  const { signOut } = useAuth();
+  const { signOut } = useClerk();
   
   const handleNavigation = (page) => {
     console.log('Navigating to:', page);
