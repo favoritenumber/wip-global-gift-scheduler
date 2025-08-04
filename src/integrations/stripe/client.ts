@@ -1,12 +1,35 @@
 import { loadStripe } from '@stripe/stripe-js';
 
 // Stripe configuration
-// Replace with your actual Stripe publishable key
-export const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder');
+// For production, replace with your actual Stripe publishable key
+// For demo purposes, we'll use a mock implementation
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder';
+
+// Create a mock Stripe promise for demo purposes
+const createMockStripe = () => {
+  return Promise.resolve({
+    confirmCardPayment: async () => ({ error: null }),
+    createToken: async () => ({ token: { id: 'mock_token' } }),
+    createPaymentMethod: async () => ({ paymentMethod: { id: 'mock_payment_method' } }),
+    elements: () => ({
+      create: () => ({
+        mount: () => {},
+        unmount: () => {},
+        update: () => {},
+      }),
+    }),
+  });
+};
+
+// Use real Stripe if key is provided, otherwise use mock
+export const stripePromise = STRIPE_PUBLISHABLE_KEY.startsWith('pk_test_') || STRIPE_PUBLISHABLE_KEY === 'pk_test_placeholder'
+  ? createMockStripe()
+  : loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 export const STRIPE_CONFIG = {
-  publishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_placeholder',
+  publishableKey: STRIPE_PUBLISHABLE_KEY,
   secretKey: import.meta.env.VITE_STRIPE_SECRET_KEY || 'sk_test_placeholder',
+  isDemo: STRIPE_PUBLISHABLE_KEY.startsWith('pk_test_') || STRIPE_PUBLISHABLE_KEY === 'pk_test_placeholder',
 };
 
 // Gift amount mappings (in cents) - matching the form options
