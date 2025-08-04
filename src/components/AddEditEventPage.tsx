@@ -367,7 +367,7 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
           {/* Form */}
           <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-              <form onSubmit={handleSubmit} className="p-8 space-y-8">
+              <form onSubmit={(e) => e.preventDefault()} className="p-8 space-y-8">
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3">
                     <AlertCircle className="h-5 w-5 text-red-500" />
@@ -664,6 +664,41 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
                   </div>
                 </div>
 
+                {/* Payment Preview Section */}
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border-2 border-green-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="p-2 bg-green-100 rounded-lg">
+                        <CreditCard className="h-5 w-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-800">Payment Summary</h3>
+                        <p className="text-sm text-gray-600">Complete your gift with secure payment</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-3xl font-bold text-green-600">
+                        ${(GIFT_AMOUNTS[formData.gift_amount] || 500) / 100}
+                      </span>
+                      <p className="text-xs text-gray-600">USD</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div className="bg-white rounded-lg p-3 border border-green-200">
+                      <p className="font-semibold text-green-700">✅ Secure Payment</p>
+                      <p className="text-gray-600">SSL encrypted</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-3 border border-green-200">
+                      <p className="font-semibold text-green-700">✅ Instant Scheduling</p>
+                      <p className="text-gray-600">Gift scheduled immediately</p>
+                    </div>
+                    <div className="bg-white rounded-lg p-3 border border-green-200">
+                      <p className="font-semibold text-green-700">✅ Email Confirmation</p>
+                      <p className="text-gray-600">Receipt sent to your email</p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Actions */}
                 <div className="flex items-center justify-end space-x-4 pt-8 border-t border-gray-200">
                   <button
@@ -676,20 +711,41 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
                   >
                     Cancel
                   </button>
+                  
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        <span>Saving Gift...</span>
+                        <span>Saving...</span>
                       </>
                     ) : (
                       <>
                         <Save className="h-4 w-4" />
-                        <span>{editingEvent ? 'Update Gift' : 'Save & Continue to Payment'}</span>
+                        <span>Save Gift</span>
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={isSubmitting}
+                    className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                        <span>Processing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-4 w-4" />
+                        <span>Make Payment</span>
                       </>
                     )}
                   </button>
