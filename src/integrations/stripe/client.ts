@@ -8,7 +8,6 @@ export const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
 
 export const STRIPE_CONFIG = {
   publishableKey: STRIPE_PUBLISHABLE_KEY,
-  secretKey: import.meta.env.VITE_STRIPE_SECRET_KEY || 'sk_live_51OQwXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   isDemo: false, // Always use real payments
 };
 
