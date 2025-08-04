@@ -367,7 +367,10 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
           {/* Form */}
           <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-              <form onSubmit={(e) => e.preventDefault()} className="p-8 space-y-8">
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                // Don't auto-submit, let buttons handle it
+              }} className="p-8 space-y-8">
                 {error && (
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center space-x-3">
                     <AlertCircle className="h-5 w-5 text-red-500" />
@@ -714,7 +717,10 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
                   
                   <button
                     type="button"
-                    onClick={handleSubmit}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }}
                     disabled={isSubmitting}
                     className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed"
                   >
@@ -733,7 +739,10 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
 
                   <button
                     type="button"
-                    onClick={handleSubmit}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }}
                     disabled={isSubmitting}
                     className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                   >
