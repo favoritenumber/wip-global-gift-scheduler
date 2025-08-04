@@ -7,6 +7,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { stripePromise } from '@/integrations/stripe/client';
 import { GIFT_AMOUNTS } from '@/integrations/stripe/client';
 import PaymentForm from './PaymentForm';
+import { Button } from '@/components/ui/button';
 
 interface AddEditEventPageProps {
   editingEvent: any;
@@ -106,8 +107,8 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
     setFormData(prev => ({ ...prev, recipient_name: value }));
     
     if (value.length > 0) {
-      const suggestions = getUniqueNames().filter(name => 
-        name.toLowerCase().includes(value.toLowerCase())
+      const suggestions = getUniqueNames().filter((name: any) => 
+        String(name).toLowerCase().includes(value.toLowerCase())
       );
       setFilteredSuggestions(suggestions);
       setShowSuggestions(suggestions.length > 0);

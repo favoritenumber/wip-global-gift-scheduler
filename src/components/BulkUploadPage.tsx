@@ -215,9 +215,9 @@ const BulkUploadPage: React.FC = () => {
               <tbody>
                 {preview.map((row, idx) => (
                   <tr key={idx}>
-                    {Object.values(row).map((value, i) => (
-                      <td key={i} className="px-3 py-2 border-b border-gray-100">{value}</td>
-                    ))}
+                  {Object.values(row).map((value, i) => (
+                    <td key={i} className="px-3 py-2 border-b border-gray-100">{String(value)}</td>
+                  ))}
                   </tr>
                 ))}
               </tbody>
@@ -235,7 +235,7 @@ const BulkUploadPage: React.FC = () => {
       {uploadResult && (
         <div className="mt-6">
           {uploadResult.failed === 0 ? (
-            <Alert variant="success" className="border-green-200 bg-green-50 text-green-700">
+            <Alert variant="default" className="border-green-200 bg-green-50 text-green-700">
               <CheckCircle className="h-4 w-4" />
               <AlertDescription>Upload successful! {uploadResult.success} records imported.</AlertDescription>
             </Alert>

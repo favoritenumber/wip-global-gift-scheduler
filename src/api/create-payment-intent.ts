@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 // Replace with your actual Stripe secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-07-30.basil',
 });
 
 export default async function handler(req: any, res: any) {
