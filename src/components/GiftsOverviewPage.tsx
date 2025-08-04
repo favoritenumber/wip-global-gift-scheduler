@@ -223,7 +223,7 @@ const GiftsOverviewPage: React.FC<GiftsOverviewPageProps> = ({
                 <Gift className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h2 className="text-3xl font-bold text-white mb-2">Gifts</h2>
+                <h2 className="text-3xl font-bold text-white mb-2">Gift Schedule</h2>
                 <p className="text-blue-100 text-sm">Manage your gift schedule</p>
               </div>
             </div>
