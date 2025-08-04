@@ -699,6 +699,31 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
                 </div>
               </div>
             )}
+
+            {/* Payment Form Modal */}
+            {showPayment && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-2xl font-bold text-gray-900">Complete Your Gift</h2>
+                      <button
+                        onClick={handlePaymentCancel}
+                        className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                      >
+                        <X className="h-6 w-6" />
+                      </button>
+                    </div>
+                    <PaymentForm
+                      amount={paymentAmount}
+                      giftId={currentGiftId}
+                      onSuccess={handlePaymentSuccess}
+                      onCancel={handlePaymentCancel}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

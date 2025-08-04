@@ -18,8 +18,11 @@ const queryClient = new QueryClient();
 const AppContent: React.FC = () => {
   const { user, loading } = useAuth();
 
+  console.log('AppContent rendered:', { user, loading });
+
   // Show loading while auth is initializing
   if (loading) {
+    console.log('Showing loading screen');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
         <div className="text-center">
@@ -38,6 +41,8 @@ const AppContent: React.FC = () => {
       </div>
     );
   }
+
+  console.log('Auth loaded, user:', user ? 'logged in' : 'not logged in');
 
   return (
     <Routes>
@@ -67,6 +72,8 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => {
+  console.log('App component rendered');
+  
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
