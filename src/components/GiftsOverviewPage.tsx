@@ -112,7 +112,7 @@ const GiftsOverviewPage: React.FC<GiftsOverviewPageProps> = ({
 
   const handleEditGift = (gift: any) => {
     setEditingEvent(gift);
-    setCurrentPage('add-edit');
+    setCurrentPage('add-event');
   };
 
   const handleDeleteGift = async (giftId: string) => {
@@ -134,7 +134,7 @@ const GiftsOverviewPage: React.FC<GiftsOverviewPageProps> = ({
   };
 
   const renderGiftCard = (gift: any) => (
-    <div key={gift.id} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow">
+    <div key={gift.id} className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-all duration-200 hover:scale-[1.02]">
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-semibold text-gray-900">
@@ -145,46 +145,55 @@ const GiftsOverviewPage: React.FC<GiftsOverviewPageProps> = ({
         <div className="text-right">
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
             gift.status === 'draft' 
-              ? 'bg-yellow-100 text-yellow-800' 
+              ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
               : gift.status === 'paid' 
-              ? 'bg-green-100 text-green-800'
-              : 'bg-gray-100 text-gray-800'
+              ? 'bg-green-100 text-green-800 border border-green-200'
+              : 'bg-gray-100 text-gray-800 border border-gray-200'
           }`}>
             {gift.status === 'draft' ? 'Draft' : gift.status === 'paid' ? 'Paid' : gift.status}
           </span>
         </div>
       </div>
       
-      <div className="space-y-2 mb-4">
-        <p className="text-sm text-gray-600">
-          <Calendar className="inline mr-1 h-4 w-4" />
-          {new Date(gift.event_date).toLocaleDateString()}
-        </p>
-        <p className="text-sm text-gray-600">
-          <Gift className="inline mr-1 h-4 w-4" />
-          {gift.gift_amount}
-        </p>
+      <div className="space-y-3 mb-4">
+        <div className="flex items-center text-sm text-gray-600">
+          <Calendar className="mr-2 h-4 w-4 text-blue-500" />
+          <span>{new Date(gift.event_date).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          })}</span>
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <Gift className="mr-2 h-4 w-4 text-purple-500" />
+          <span className="font-medium">{gift.gift_amount}</span>
+        </div>
         {gift.personal_message && (
-          <p className="text-sm text-gray-600 italic">
-            "{gift.personal_message}"
-          </p>
+          <div className="bg-blue-50 rounded-lg p-3">
+            <p className="text-sm text-gray-700 italic">
+              "{gift.personal_message}"
+            </p>
+          </div>
         )}
       </div>
       
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center pt-4 border-t border-gray-100">
         <div className="flex space-x-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => handleEditGift(gift)}
+            className="hover:bg-blue-50 hover:border-blue-300 transition-colors"
           >
+            <Edit className="mr-1 h-3 w-3" />
             Edit
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => handleDeleteGift(gift.id)}
-            className="text-red-600 hover:text-red-700"
+            className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-colors"
           >
             Delete
           </Button>
@@ -193,7 +202,7 @@ const GiftsOverviewPage: React.FC<GiftsOverviewPageProps> = ({
         {gift.status === 'draft' && (
           <Button
             onClick={() => handlePaymentForGift(gift)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <CreditCard className="mr-2 h-4 w-4" />
             Pay & Confirm

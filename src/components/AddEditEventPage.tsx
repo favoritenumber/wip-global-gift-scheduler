@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Gift, User, Calendar, MapPin, Camera, Save, AlertCircle, Plus, X, Sparkles } from 'lucide-react';
+import { ArrowLeft, Gift, User, Calendar, MapPin, Camera, Save, AlertCircle, Plus, X, Sparkles, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import AIMessageGenerator from './AIMessageGenerator';
@@ -498,9 +498,31 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
                       <option value="Personal Note and photo ($5)">Personal Note and photo ($5)</option>
                       <option value="Sweet Something ($25)">Sweet Something ($25)</option>
                       <option value="Thoughtful Present ($50)">Thoughtful Present ($50)</option>
-                      <option value="Generous Gesture ($100)">Generous Gesture ($100)</option>
+                      <option value="Special Gift ($100)">Special Gift ($100)</option>
+                      <option value="Premium Gift ($250)">Premium Gift ($250)</option>
+                      <option value="Luxury Gift ($500)">Luxury Gift ($500)</option>
                     </select>
-                    <p className="text-sm text-gray-600 mt-2">{getGiftPreviewText()}</p>
+                  </div>
+
+                  {/* Payment Preview */}
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-200">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-2">
+                        <CreditCard className="h-5 w-5 text-blue-600" />
+                        <span className="font-semibold text-gray-800">Payment Preview</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-2xl font-bold text-green-600">
+                          ${(GIFT_AMOUNTS[formData.gift_amount] || 500) / 100}
+                        </span>
+                        <p className="text-xs text-gray-600">USD</p>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-600 bg-white rounded-lg p-3 border border-blue-200">
+                      <p>✅ Secure payment processing</p>
+                      <p>✅ Instant gift scheduling</p>
+                      <p>✅ Email confirmation</p>
+                    </div>
                   </div>
 
                   <div>
@@ -657,17 +679,17 @@ const AddEditEventPage: React.FC<AddEditEventPageProps> = ({
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed"
+                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 text-white rounded-xl font-semibold transition-all duration-200 flex items-center space-x-2 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                   >
                     {isSubmitting ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                        <span>Saving...</span>
+                        <span>Saving Gift...</span>
                       </>
                     ) : (
                       <>
                         <Save className="h-4 w-4" />
-                        <span>{editingEvent ? 'Update Gift' : 'Create Gift'}</span>
+                        <span>{editingEvent ? 'Update Gift' : 'Save & Continue to Payment'}</span>
                       </>
                     )}
                   </button>
