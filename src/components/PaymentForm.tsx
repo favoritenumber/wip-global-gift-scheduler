@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CreditCard, CheckCircle, XCircle, Gift, DollarSign } from 'lucide-react';
-import { STRIPE_CONFIG } from '@/integrations/stripe/client';
 
 interface PaymentFormProps {
   giftId: string;
@@ -30,33 +29,30 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    if (!stripe || !elements) {
+      setError('Payment system not available. Please try again.');
+      return;
+    }
+
     setIsProcessing(true);
     setError('');
 
     try {
-      // Demo mode - simulate payment processing
-      if (STRIPE_CONFIG.isDemo) {
-        console.log('Demo mode: Simulating payment processing...');
-        
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Simulate successful payment
-        setSuccess(true);
-        setTimeout(() => {
-          onSuccess();
-        }, 2000);
+      // Create payment method
+      const { error: paymentMethodError, paymentMethod } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: elements.getElement(CardElement)!,
+      });
+
+      if (paymentMethodError) {
+        setError(paymentMethodError.message || 'Payment failed. Please try again.');
         return;
       }
 
-      // Production mode - real Stripe payment
-      if (!stripe || !elements) {
-        setError('Payment system not available. Please try again.');
-        return;
-      }
-
-      // Real payment processing would go here
-      // For now, we'll simulate success
+      // Simulate payment confirmation (in real app, you'd call your backend)
+      console.log('Payment method created:', paymentMethod?.id);
+      
+      // Simulate successful payment
       await new Promise(resolve => setTimeout(resolve, 2000));
       setSuccess(true);
       setTimeout(() => {
@@ -64,6 +60,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
       }, 2000);
 
     } catch (error) {
+      console.error('Payment error:', error);
       setError('Payment failed. Please try again.');
     } finally {
       setIsProcessing(false);
@@ -78,15 +75,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
             <CheckCircle className="h-8 w-8 text-white" />
           </div>
           <h3 className="text-xl font-bold text-green-800 mb-2">Payment Successful!</h3>
-          <p className="text-green-700 mb-4">
-            {STRIPE_CONFIG.isDemo ? 'Demo payment completed successfully!' : 'Your gift has been scheduled and paid for.'}
-          </p>
+          <p className="text-green-700 mb-4">Your gift has been scheduled and paid for.</p>
           <div className="bg-white rounded-lg p-4 border border-green-200">
             <p className="text-sm text-gray-600">Amount Paid:</p>
             <p className="text-2xl font-bold text-green-600">{formatAmount(amount)}</p>
-            {STRIPE_CONFIG.isDemo && (
-              <p className="text-xs text-gray-500 mt-2">Demo Mode</p>
-            )}
           </div>
         </div>
       </div>
@@ -103,9 +95,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
             </div>
             <div>
               <span className="text-xl font-bold">Complete Your Gift</span>
-              <p className="text-blue-100 text-sm font-normal">
-                {STRIPE_CONFIG.isDemo ? 'Demo Mode - Secure payment simulation' : 'Secure payment powered by Stripe'}
-              </p>
+              <p className="text-blue-100 text-sm font-normal">Secure payment powered by Stripe</p>
             </div>
           </CardTitle>
         </CardHeader>
@@ -126,9 +116,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
               <p>✅ Secure payment processing</p>
               <p>✅ Instant gift scheduling</p>
               <p>✅ Email confirmation</p>
-              {STRIPE_CONFIG.isDemo && (
-                <p className="text-blue-600 font-medium">🎯 Demo Mode - No real charges</p>
-              )}
             </div>
           </div>
 
@@ -138,37 +125,25 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
                 Card Information
               </label>
               <div className="border-2 border-gray-300 rounded-xl p-4 hover:border-blue-400 focus-within:border-blue-500 transition-colors">
-                {STRIPE_CONFIG.isDemo ? (
-                  <div className="p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                    <div className="flex items-center space-x-2 text-gray-600">
-                      <CreditCard className="h-5 w-5" />
-                      <span className="font-medium">Demo Payment Form</span>
-                    </div>
-                    <p className="text-sm text-gray-500 mt-2">
-                      In demo mode, any card details will work for testing.
-                    </p>
-                  </div>
-                ) : (
-                  <CardElement
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: '16px',
-                          color: '#424770',
-                          '::placeholder': {
-                            color: '#aab7c4',
-                          },
-                          ':-webkit-autofill': {
-                            color: '#424770',
-                          },
+                <CardElement
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: '16px',
+                        color: '#424770',
+                        '::placeholder': {
+                          color: '#aab7c4',
                         },
-                        invalid: {
-                          color: '#9e2146',
+                        ':-webkit-autofill': {
+                          color: '#424770',
                         },
                       },
-                    }}
-                  />
-                )}
+                      invalid: {
+                        color: '#9e2146',
+                      },
+                    },
+                  }}
+                />
               </div>
             </div>
 
@@ -191,7 +166,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
               </Button>
               <Button
                 type="submit"
-                disabled={isProcessing}
+                disabled={!stripe || isProcessing}
                 className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 {isProcessing ? (
