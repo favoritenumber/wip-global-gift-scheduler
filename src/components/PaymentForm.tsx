@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CreditCard, CheckCircle, XCircle, Gift, DollarSign } from 'lucide-react';
-import { PaymentService } from '@/integrations/stripe/payment-service';
 
 interface PaymentFormProps {
   giftId: string;
@@ -31,6 +30,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
     event.preventDefault();
 
     if (!stripe || !elements) {
+      setError('Payment system not available. Please try again.');
       return;
     }
 
@@ -38,24 +38,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ giftId, amount, onSuccess, on
     setError('');
 
     try {
-      // Create payment intent
-      const { clientSecret } = await PaymentService.createPaymentIntent(giftId, amount);
-
-      // Confirm card payment
-      const { error: confirmError } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: elements.getElement(CardElement)!,
-        },
-      });
-
-      if (confirmError) {
-        setError(confirmError.message || 'Payment failed');
-        return;
-      }
-
-      // Process the payment
-      await PaymentService.processGiftPayment(giftId, clientSecret);
+      // For demo purposes, simulate payment processing
+      // In a real app, you would call your backend API here
       
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simulate successful payment
       setSuccess(true);
       setTimeout(() => {
         onSuccess();

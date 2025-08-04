@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Calendar, Users, Settings, HelpCircle, LogOut, Gift, Menu, X, Heart, Upload } from 'lucide-react';
+import { Calendar, Users, Settings, HelpCircle, LogOut, Gift, Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   currentPage: string;
@@ -26,9 +26,7 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, setEditing
 
   const navigationItems = [
     { id: 'gifts', label: 'Gifts', icon: Calendar },
-    { id: 'bulk-upload', label: 'Bulk Upload', icon: Upload },
     { id: 'people', label: 'People', icon: Users },
-    { id: 'received-gifts', label: 'Received', icon: Heart },
     { id: 'settings', label: 'Settings', icon: Settings },
     { id: 'support', label: 'Support', icon: HelpCircle }
   ];
@@ -46,7 +44,6 @@ const Header: React.FC<HeaderProps> = ({ currentPage, setCurrentPage, setEditing
               <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 bg-clip-text text-transparent">
                 Gift Schedule
               </h1>
-              <p className="text-xs text-gray-500">Never miss a special moment</p>
             </div>
           </div>
         </div>
