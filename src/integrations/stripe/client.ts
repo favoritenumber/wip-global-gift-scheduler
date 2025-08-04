@@ -1,8 +1,7 @@
 import { loadStripe } from '@stripe/stripe-js';
 
 // Stripe configuration - Production keys
-// Replace these with your actual Stripe publishable key from your Stripe dashboard
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_live_51OQwXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+const STRIPE_PUBLISHABLE_KEY = 'pk_live_51PkXMoKuuxIO8qp1QszA1qe8EuOFAfOaR3sLxNLitra0RS5Pl3O488nh6eWJrIw0xtRCER3uR8DEBkfAUD9QyRwA00V0YDKT9R';
 
 // Load real Stripe
 export const stripePromise = loadStripe(STRIPE_PUBLISHABLE_KEY);
